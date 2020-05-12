@@ -1,11 +1,12 @@
 import React from 'react'
-import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground } from 'react-native'
+import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
 
 function Login() {
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
+            <Text style = {styles.title}>E-LEARNING</Text>
             <View style = {styles.loginForm}>
-                <Text style = {styles.title}>Sign in</Text>
+                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Welcome back!</Text>
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Email'
@@ -18,7 +19,16 @@ function Login() {
                     keyboardType = 'unvisible-password'
                     underlineColorAndroid = 'transparent'
                 />
+                <TouchableOpacity>
+                    <Text style={styles.textForgotPassword}>Forgot Password?</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                    <Text style={styles.textInSignInButton}>Sign in</Text>
+                </TouchableOpacity>
             </View>
+            <TouchableOpacity>
+                <Text style={styles.textInfooter}>New here? Create an account</Text>
+            </TouchableOpacity>
         </ImageBackground>
     </View>
 }
@@ -35,7 +45,7 @@ const styles = StyleSheet.create({
         resizeMode: "cover",
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: "center",
+        justifyContent: 'space-around',
         alignItems: "center"
     },
     loginForm: {
@@ -46,17 +56,48 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 40,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: 'white',
     },
     textInput: {
         fontSize: 15,
-        margin: 20,
-        height: 60,
+        margin: 5,
+        height: 55,
         width: windowWidth - 20 *2,
         backgroundColor: '#fff',
+        paddingLeft: 10,
         borderColor: 'black',
         borderWidth: 0.2,
-    }
+        borderRadius: 30,
+    },
+    textForgotPassword: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    textInSignInButton: {
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: 'white',
+        margin: 20,
+        height: 55,
+        width: windowWidth - 20 *2,
+        backgroundColor: 'skyblue',
+        borderColor: 'black',
+        borderWidth: 0.2,
+        borderRadius: 30,
+    },
+    textInfooter: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: 'white',
+    },
 })
 
 export default Login

@@ -1,38 +1,38 @@
 import React from 'react'
-import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
+import { Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
 
-const Register = () => {
+const VerifyPassword = () => {
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
             <View style = {styles.loginForm}>
-                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Create an account</Text>
+                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Reset password</Text>
                 <TextInput
                 style = {styles.textInput}
-                    placeholder = 'Email'
-                    keyboardType = 'email-address'
+                    placeholder = 'Verification Code'
+                    keyboardType = 'numeric'
                     underlineColorAndroid = 'transparent'
                 />
                 <TextInput
                 style = {styles.textInput}
-                    placeholder = 'Password'
+                    placeholder = 'New Password'
                     keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
                 <TextInput
                 style = {styles.textInput}
-                    placeholder = 'Confirm Password'
+                    placeholder = 'Confirm New Password'
                     keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.textInSignInButton}>Sign up</Text>
+                    <Text style={styles.textInSignInButton}>Confirm</Text>
                 </TouchableOpacity>
             </View>
             <TouchableOpacity>
-                <Text style={styles.textInfooter}>Have an account? Sign in</Text>
+                <Text style={styles.textInfooter}>Back to login page</Text>
             </TouchableOpacity>
         </ImageBackground>
     </View>
@@ -100,4 +100,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Register
+export default VerifyPassword

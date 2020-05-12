@@ -1,12 +1,12 @@
 import React from 'react'
 import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
 
-function Login() {
+const Register = () => {
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
             <View style = {styles.loginForm}>
-                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Welcome back!</Text>
+                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Create an account</Text>
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Email'
@@ -20,15 +20,19 @@ function Login() {
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
-                <TouchableOpacity>
-                    <Text style={styles.textForgotPassword}>Forgot Password?</Text>
-                </TouchableOpacity>
+                <TextInput
+                style = {styles.textInput}
+                    placeholder = 'Confirm Password'
+                    keyboardType = 'unvisible-password'
+                    secureTextEntry = {true}
+                    underlineColorAndroid = 'transparent'
+                />
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.textInSignInButton}>Sign in</Text>
+                    <Text style={styles.textInSignInButton}>Sign up</Text>
                 </TouchableOpacity>
             </View>
             <TouchableOpacity>
-                <Text style={styles.textInfooter}>New here? Create an account</Text>
+                <Text style={styles.textInfooter}>Have an account? Sign in</Text>
             </TouchableOpacity>
         </ImageBackground>
     </View>
@@ -101,4 +105,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Login
+export default Register

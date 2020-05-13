@@ -5,15 +5,17 @@ import Login from './src/components/Authentication/Login/Login';
 import Register from './src/components/Authentication/Register/Register';
 import ForgetPassword from './src/components/Authentication/ForgetPassword/ForgetPassword';
 import VerifyPassword from './src/components/Authentication/ForgetPassword/VerifyPassword';
+import ListCourses from './src/components/Courses/ListCourses/ListCourses';
 
 export default function App() {
   return (
     <View style = {styles.container}>
-      {/* <Home></Home> */}
       {/* <Login></Login> */}
       {/* <Register></Register> */}
       {/* <ForgetPassword></ForgetPassword> */}
-      <VerifyPassword></VerifyPassword>
+      {/* <VerifyPassword></VerifyPassword> */}
+      {/* <Home></Home> */}
+      <ListCourses></ListCourses>
     </View>
   );
 }
@@ -21,6 +23,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    paddingTop: 30
   },
 });

@@ -1,19 +1,19 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import SectionCourses from './SectionCourses/SectionCourses'
+import ImageButton from '../../Common/ImageButton'
 
 const Home = props => {
-    return <View style = {styles.container}>
-        <ScrollView>
-            <SectionCourses title='Categories'/>
-            <SectionCourses title='Top courses in Design'/>
-            <SectionCourses title='Top courses in Business'/>
-            <SectionCourses title='Top courses in Design'/>
-            <SectionCourses title='Top courses in IT and Software'/>
-            <SectionCourses title='Top courses in Personal Development'/>
-            <SectionCourses title='Students are viewing'/>
-        </ScrollView>
-    </View>
+    return <ScrollView>
+        <ImageButton title='NEW RELEASES'></ImageButton>
+        <SectionCourses title='Categories'/>
+        <SectionCourses title='Top courses in Design'/>
+        <SectionCourses title='Top courses in Business'/>
+        <SectionCourses title='Top courses in Design'/>
+        <SectionCourses title='Top courses in IT and Software'/>
+        <SectionCourses title='Top courses in Personal Development'/>
+        <SectionCourses title='Students are viewing'/>
+    </ScrollView>
 }
 
 const styles = StyleSheet.create({

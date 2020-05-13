@@ -4,9 +4,11 @@ import { View, Text, StyleSheet, Image } from 'react-native'
 function SectionCourserItem(props) {
     return <View style = {styles.item}>
         <Image source = {require('../../../../../assets/icon_course.png')} style = {styles.image}></Image>
-        <Text style = {styles.title}>{props.item.title}</Text>
-        <Text style = {styles.text}>{props.item.author}</Text>
-        <Text style = {styles.text}>{props.item.level} - {props.item.released} - {props.item.duration}</Text>
+        <View>
+            <Text style = {styles.title}>{props.item.title}</Text>
+            <Text style = {styles.text}>{props.item.author}</Text>
+            <Text style = {styles.text}>{props.item.level} - {props.item.released} - {props.item.duration}</Text>
+        </View>
     </View>
 }
 

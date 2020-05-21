@@ -5,8 +5,8 @@ function Login() {
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
-            <View style = {styles.loginForm}>
-                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Welcome back!</Text>
+            <View style = {styles.form}>
+                <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Welcome back</Text>
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Email'
@@ -47,13 +47,15 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
-        alignItems: "center"
+        alignItems: "center",
     },
-    loginForm: {
+    form: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center"
+        justifyContent: 'flex-start',
+        alignItems: "center",
+        height: 400,
+        paddingTop: 30
     },
     title: {
         fontSize: 40,

@@ -5,7 +5,7 @@ const ForgetPassword = () => {
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
-            <View style = {styles.loginForm}>
+            <View style = {styles.form}>
                 <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Reset password</Text>
                 <TextInput
                 style = {styles.textInput}
@@ -39,11 +39,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: "center"
     },
-    loginForm: {
+    form: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: "center",
-        alignItems: "center"
+        justifyContent: 'flex-start',
+        alignItems: "center",
+        height: 400,
+        paddingTop: 30
     },
     title: {
         fontSize: 40,

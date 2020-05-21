@@ -1,10 +1,18 @@
 import React from 'react'
 import { Dimensions, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native'
 
-const Introduction = () => {
+const Introduction = (props) => {
 
     const handleOnPress = () => {
         alert('Handle when pressing');
+    }
+
+    const HandleBrowseButton = () => {
+        props.navigation.navigate('Home');
+    }
+
+    const HandleLoginButton = () => {
+        props.navigation.navigate('Login');
     }
 
     return (
@@ -39,10 +47,10 @@ const Introduction = () => {
                 </View>
             </ScrollView>
             <View style={styles.buttonArea}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={HandleBrowseButton}>
                     <Text style={styles.textInButton}>Browse</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={HandleLoginButton}>
                     <Text style={styles.textInButton}>Sign in</Text>
                 </TouchableOpacity>
             </View>

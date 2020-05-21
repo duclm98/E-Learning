@@ -1,7 +1,16 @@
 import React from 'react'
 import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
 
-function Login() {
+function Login(props) {
+
+    const HandleCreateAccountButton = () =>{
+        props.navigation.navigate('Register');
+    }
+
+    const HandleForgetPasswordButton = () =>{
+        props.navigation.navigate('ForgetPassword');
+    }
+
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
@@ -20,14 +29,14 @@ function Login() {
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={HandleForgetPasswordButton}>
                     <Text style={styles.textForgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.textInSignInButton}>Sign in</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={HandleCreateAccountButton}>
                 <Text style={styles.textInfooter}>New here? Create an account</Text>
             </TouchableOpacity>
         </ImageBackground>

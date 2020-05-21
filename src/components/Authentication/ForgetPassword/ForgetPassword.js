@@ -1,7 +1,12 @@
 import React from 'react'
 import { Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
 
-const ForgetPassword = () => {
+const ForgetPassword = (props) => {
+
+    const HandleGoBackLoginButton = () => {
+        props.navigation.navigate('Login');
+    }
+
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
@@ -17,7 +22,7 @@ const ForgetPassword = () => {
                     <Text style={styles.textInSignInButton}>Confirm</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={HandleGoBackLoginButton}>
                 <Text style={styles.textInfooter}>Back to login page</Text>
             </TouchableOpacity>
         </ImageBackground>

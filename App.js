@@ -22,6 +22,7 @@ export default function App() {
         <Stack.Screen name='Login' component={Login} options={{title: 'Login', headerShown: false, headerTransparent:{position: 'absolute', backgroundColor: 'transparent'}}}></Stack.Screen>
         <Stack.Screen name='Register' component={Register} options={{title: 'Register', headerShown: false, headerTransparent:{position: 'absolute', backgroundColor: 'transparent'}}}></Stack.Screen>
         <Stack.Screen name='ForgetPassword' component={ForgetPassword} options={{title: 'Forget password', headerShown: false, headerTransparent:{position: 'absolute', backgroundColor: 'transparent'}}}></Stack.Screen>
+        <Stack.Screen name='VerifyPassword' component={VerifyPassword} options={{title: 'Verify password', headerShown: false, headerTransparent:{position: 'absolute', backgroundColor: 'transparent'}}}></Stack.Screen>
         <Stack.Screen name='Home' component={Home} options={{title: 'Home'}}></Stack.Screen>
         <Stack.Screen name="ListCourses" component={ListCourses} options={{title: 'List courses'}}></Stack.Screen>
       </Stack.Navigator>

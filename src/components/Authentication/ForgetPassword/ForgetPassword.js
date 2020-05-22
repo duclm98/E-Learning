@@ -7,6 +7,10 @@ const ForgetPassword = (props) => {
         props.navigation.navigate('Login');
     }
 
+    const HandleConfirmButton = () => {
+        props.navigation.navigate('VerifyPassword');
+    }
+
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
             <Text style = {styles.title}>E-LEARNING</Text>
@@ -18,7 +22,7 @@ const ForgetPassword = (props) => {
                     keyboardType = 'email-address'
                     underlineColorAndroid = 'transparent'
                 />
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity onPress={HandleConfirmButton} style={styles.button}>
                     <Text style={styles.textInSignInButton}>Confirm</Text>
                 </TouchableOpacity>
             </View>

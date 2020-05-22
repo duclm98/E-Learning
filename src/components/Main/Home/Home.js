@@ -1,10 +1,17 @@
-import React from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import SectionCourses from './SectionCourses/SectionCourses'
-import ImageButton from '../../Common/ImageButton'
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
+import SectionCourses from './SectionCourses/SectionCourses';
+import ImageButton from '../../Common/ImageButton';
+import { useCollapsibleStack } from 'react-navigation-collapsible';
 
 const Home = props => {
-    return <ScrollView>
+    const {
+        onScroll /* Event handler */ ,
+        containerPaddingTop /* number */ ,
+        scrollIndicatorInsetTop /* number */ ,
+    } = useCollapsibleStack();
+
+    return <Animated.ScrollView onScroll={onScroll} contentContainerStyle={{ paddingTop: 0 }} scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
         <ImageButton title='NEW RELEASES'></ImageButton>
         <SectionCourses title='Categories'/>
         <SectionCourses title='Top courses in Design'/>
@@ -13,7 +20,7 @@ const Home = props => {
         <SectionCourses title='Top courses in IT and Software'/>
         <SectionCourses title='Top courses in Personal Development'/>
         <SectionCourses title='Students are viewing'/>
-    </ScrollView>
+    </Animated.ScrollView>
 }
 
 const styles = StyleSheet.create({

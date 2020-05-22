@@ -1,5 +1,5 @@
-import React from 'react'
-import { Dimensions, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native'
+import React from 'react';
+import { Dimensions, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 
 const Introduction = (props) => {
 
@@ -12,7 +12,9 @@ const Introduction = (props) => {
     }
 
     const HandleLoginButton = () => {
-        props.navigation.navigate('Login');
+        props.navigation.navigate('Login', {
+            authContext: props.route.params.authContext
+        });
     }
 
     return (

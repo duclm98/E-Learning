@@ -1,7 +1,14 @@
-import React from 'react'
-import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native'
+import * as React from 'react';
+import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
 
 function Login(props) {
+
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
+    const {
+        signIn
+    } = React.useContext(props.route.params.authContext);
 
     const HandleCreateAccountButton = () =>{
         props.navigation.navigate('Register');
@@ -17,10 +24,12 @@ function Login(props) {
             <View style = {styles.form}>
                 <Text style = {{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Welcome back</Text>
                 <TextInput
-                style = {styles.textInput}
+                    style = {styles.textInput}
                     placeholder = 'Email'
                     keyboardType = 'email-address'
                     underlineColorAndroid = 'transparent'
+                    value={username}
+                    onChangeText={setUsername}
                 />
                 <TextInput
                 style = {styles.textInput}
@@ -28,11 +37,13 @@ function Login(props) {
                     keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
+                    value={password}
+                    onChangeText={setPassword}
                 />
                 <TouchableOpacity onPress={HandleForgetPasswordButton}>
                     <Text style={styles.textForgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => signIn({ username, password })}>
                     <Text style={styles.textInSignInButton}>Sign in</Text>
                 </TouchableOpacity>
             </View>

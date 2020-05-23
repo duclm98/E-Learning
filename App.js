@@ -42,7 +42,18 @@ const HomeStack = (props) => {
     }
   }
   return <Stack.Navigator>
-    <Stack.Screen name='Home' component={Home} options={{headerShown: false}}></Stack.Screen>
+    {createCollapsibleStack(
+      <Stack.Screen name='Home' component={Home}
+        options={{headerTitle:'',
+                  headerLeft: ()=>(<Text></Text>),
+                  headerRight: ()=>(
+                    <TouchableOpacity>
+                      <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white', paddingRight: 20}}>SIGN IN</Text>
+                    </TouchableOpacity>
+                  )
+                }}
+      ></Stack.Screen>
+    )}
     <Stack.Screen name="ListCourses" component={ListCourses} options={{title: title, ...stackOptions}}></Stack.Screen>
   </Stack.Navigator>
 }
@@ -113,27 +124,13 @@ const MainTab = (props) => {
 }
 
 const AnonymousStack = (props) => {
-  const HandleLoginButton = () => {
-    props.navigation.navigate('Login');
-  }
   return <Stack.Navigator initialRouteName='Introduction'>
-    <Stack.Screen name='Introduction' component={Introduction} initialParams={{authContext: AuthContext}} options={{title: 'Introduction', headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='Login' component={Login} initialParams={{authContext: AuthContext}} options={{title: 'Login', headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='Register' component={Register} options={{title: 'Register', headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='ForgetPassword' component={ForgetPassword} options={{title: 'Forget password', headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='VerifyPassword' component={VerifyPassword} options={{title: 'Verify password', headerShown: false}}></Stack.Screen>
-    {createCollapsibleStack(
-      <Stack.Screen name='Home' component={Home}
-        options={{headerTitle:'',
-                  headerLeft: ()=>(<Text></Text>),
-                  headerRight: ()=>(
-                    <TouchableOpacity onPress={HandleLoginButton}>
-                      <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white', paddingRight: 20}}>SIGN IN</Text>
-                    </TouchableOpacity>
-                  )
-                }}
-      ></Stack.Screen>
-    )}
+    <Stack.Screen name='Introduction' component={Introduction} initialParams={{authContext: AuthContext}} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='Login' component={Login} initialParams={{authContext: AuthContext}} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='Register' component={Register} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='ForgetPassword' component={ForgetPassword} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='VerifyPassword' component={VerifyPassword} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='MainTab' component={MainTab} options={{headerShown: false}}></Stack.Screen>
   </Stack.Navigator>
 }
 
@@ -226,12 +223,12 @@ export default function App() {
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
         <Stack.Navigator>
-          {/* {state.userToken == null ? (
-            <Stack.Screen name='Anonymous stack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
+          {state.userToken == null ? (
+            <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
           ) : (
-            <Stack.Screen name='Identified stack' component={MainTab} options={{headerShown: false}}></Stack.Screen>
-          )} */}
-          <Stack.Screen name='MainTab' component={MainTab} options={{headerShown: false}}></Stack.Screen>
+            <Stack.Screen name='MainTab' component={MainTab} options={{headerShown: false}}></Stack.Screen>
+          )}
+          {/* <Stack.Screen name='MainTab' component={MainTab} options={{headerShown: false}}></Stack.Screen> */}
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>

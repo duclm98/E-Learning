@@ -8,7 +8,7 @@ const Introduction = (props) => {
     }
 
     const HandleBrowseButton = () => {
-        props.navigation.navigate('Home');
+        props.navigation.navigate('MainTab');
     }
 
     const HandleLoginButton = () => {

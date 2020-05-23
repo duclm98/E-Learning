@@ -13,13 +13,13 @@ const Home = props => {
 
     return <Animated.ScrollView onScroll={onScroll} contentContainerStyle={{ paddingTop: 0 }} scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
         <ImageButton title='NEW RELEASES'></ImageButton>
-        <SectionCourses title='Categories'/>
-        <SectionCourses title='Top courses in Design'/>
-        <SectionCourses title='Top courses in Business'/>
-        <SectionCourses title='Top courses in Design'/>
-        <SectionCourses title='Top courses in IT and Software'/>
-        <SectionCourses title='Top courses in Personal Development'/>
-        <SectionCourses title='Students are viewing'/>
+        <SectionCourses title='Categories' navigation={props.navigation}/>
+        <SectionCourses title='Top courses in Design' navigation={props.navigation}/>
+        <SectionCourses title='Top courses in Business' navigation={props.navigation}/>
+        <SectionCourses title='Top courses in Design' navigation={props.navigation}/>
+        <SectionCourses title='Top courses in IT and Software' navigation={props.navigation}/>
+        <SectionCourses title='Top courses in Personal Development' navigation={props.navigation}/>
+        <SectionCourses title='Students are viewing' navigation={props.navigation}/>
     </Animated.ScrollView>
 }
 

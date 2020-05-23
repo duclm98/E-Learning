@@ -1,6 +1,6 @@
-import React from 'react'
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
-import SectionCourserItem from '../SectionCoursesItem/SectionCoursesItem'
+import React from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import SectionCourserItem from '../SectionCoursesItem/SectionCoursesItem';
 
 function SectionCourses(props) {
     const courses = [
@@ -34,9 +34,20 @@ function SectionCourses(props) {
         return courses.map(item => <SectionCourserItem item = {item}></SectionCourserItem>)
     }
 
+    const HandleSeeAllButton = () => {
+        props.navigation.navigate('ListCourses', {
+            title: props.title
+        });
+    }
+
     return <View>
-        <View>
+        <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style = {styles.title}>{props.title}</Text>
+            <TouchableOpacity onPress={HandleSeeAllButton}>
+                <Text style = {{fontSize: 20, paddingTop: 30, paddingRight: 20, color: 'darkslategrey'}}>
+                    See all...
+                </Text>
+            </TouchableOpacity>
         </View>
         <ScrollView horizontal = {true}>
             {renderCoursesList(courses)}

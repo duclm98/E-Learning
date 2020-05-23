@@ -58,7 +58,7 @@ const ListCourses = () => {
         <FlatList
             data={courses}
             renderItem={({item})=><ListCoursesItem item={item}></ListCoursesItem>}
-            ListHeaderComponent={()=>searchView()}
+            // ListHeaderComponent={()=>searchView()}
         ></FlatList>
     </View>
 }

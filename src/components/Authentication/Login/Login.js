@@ -1,5 +1,6 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../../../../App';
 
 function Login(props) {
 
@@ -8,7 +9,9 @@ function Login(props) {
 
     const {
         signIn
-    } = React.useContext(props.route.params.authContext);
+    } = React.useContext(AuthContext).authContext;
+
+    const errStrFailedLogin = React.useContext(AuthContext).errStrFailedLogin;
 
     const HandleCreateAccountButton = () =>{
         props.navigation.navigate('Register');
@@ -34,12 +37,12 @@ function Login(props) {
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                     value={password}
                     onChangeText={setPassword}
                 />
+                <Text style = {{color: 'blue'}}>{errStrFailedLogin}</Text>
                 <TouchableOpacity onPress={HandleForgetPasswordButton}>
                     <Text style={styles.textForgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>

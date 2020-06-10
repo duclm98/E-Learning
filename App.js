@@ -19,7 +19,8 @@ import Wishlist from './src/components/Main/Wishlist/Wishlist';
 import Account from './src/components/Main/Account/Account'
 import ListCourses from './src/components/Courses/ListCourses/ListCourses';
 
-const AuthContext = React.createContext();
+import {login} from './src/core/Services/AuthenticationServices';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -207,8 +208,8 @@ const MainTab = (props) => {
 
 const AnonymousStack = (props) => {
   return <Stack.Navigator initialRouteName='Introduction'>
-    <Stack.Screen name='Introduction' component={Introduction} initialParams={{authContext: AuthContext}} options={{headerShown: false}}></Stack.Screen>
-    <Stack.Screen name='Login' component={Login} initialParams={{authContext: AuthContext}} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='Introduction' component={Introduction} options={{headerShown: false}}></Stack.Screen>
+    <Stack.Screen name='Login' component={Login} options={{headerShown: false}}></Stack.Screen>
     <Stack.Screen name='Register' component={Register} options={{headerShown: false}}></Stack.Screen>
     <Stack.Screen name='ForgetPassword' component={ForgetPassword} options={{headerShown: false}}></Stack.Screen>
     <Stack.Screen name='VerifyPassword' component={VerifyPassword} options={{headerShown: false}}></Stack.Screen>
@@ -222,7 +223,26 @@ const IdentifiedStack = (props) => {
   </Stack.Navigator>
 }
 
+
+export const themes = {
+  light: {
+    foreground: '#000000',
+    background: '#eeeeee'
+  },
+  dark: {
+    foreground: '#ffffff',
+    background: '#222222'
+  }
+}
+
+
+export const AuthContext = React.createContext();
+export const ThemeContext = React.createContext();
+
+
 export default function App() {
+  const [theme, setTheme] = React.useState(themes.light);
+  const [errStrFailedLogin, setErrStrFailedLogin] = React.useState('');
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -283,11 +303,16 @@ export default function App() {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-
-        dispatch({
-          type: 'SIGN_IN',
-          token: 'dummy-auth-token'
-        });
+        const statusLogin = login(data.username, data.password);
+        console.log(statusLogin);
+        if (statusLogin.status === 200) {
+          dispatch({
+            type: 'SIGN_IN',
+            token: 'dummy-auth-token'
+          });
+        } else{
+          setErrStrFailedLogin(statusLogin.errStr);
+        }
       },
       signOut: () => dispatch({
         type: 'SIGN_OUT'
@@ -308,17 +333,19 @@ export default function App() {
   );
 
   return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {state.userToken == null ? (
-            <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
-          ) : (
-            <Stack.Screen name='IdentifiedStack' component={IdentifiedStack} options={{headerShown: false}}></Stack.Screen>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <ThemeContext.Provider value={{theme, setTheme}}>
+      <AuthContext.Provider value={{authContext, errStrFailedLogin}}>
+        <NavigationContainer>
+          <Stack.Navigator>
+            {state.userToken == null ? (
+              <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
+            ) : (
+              <Stack.Screen name='IdentifiedStack' component={IdentifiedStack} options={{headerShown: false}}></Stack.Screen>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </ThemeContext.Provider>
   );
 }
 

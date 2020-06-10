@@ -21,14 +21,12 @@ const VerifyPassword = (props) => {
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'New Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Confirm New Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />

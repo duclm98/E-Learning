@@ -12,9 +12,7 @@ const Introduction = (props) => {
     }
 
     const HandleLoginButton = () => {
-        props.navigation.navigate('Login', {
-            authContext: props.route.params.authContext
-        });
+        props.navigation.navigate('Login');
     }
 
     return (

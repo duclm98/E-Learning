@@ -31,7 +31,7 @@ function SectionCourses(props) {
     ]
 
     const renderCoursesList = (courses)=>{
-        return courses.map(item => <SectionCourserItem item = {item}></SectionCourserItem>)
+        return courses.map(item => <SectionCourserItem key = {item.id} item = {item}></SectionCourserItem>)
     }
 
     const HandleSeeAllButton = () => {

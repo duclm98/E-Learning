@@ -25,7 +25,7 @@ const Tab = createBottomTabNavigator();
 
 const stackOptions = {
   headerStyle: {
-    backgroundColor: '#f4511e',
+    backgroundColor: '#EB4848',
   },
   headerTintColor: 'white',
   headerTitleStyle: {
@@ -46,7 +46,7 @@ const HomeStack = (props) => {
   const headerRightButton = props.route.params.headerRightButton;
 
   return <Stack.Navigator initialRouteName='Home'>
-    {/* {createCollapsibleStack(
+    {createCollapsibleStack(
       <Stack.Screen name='Home' component={Home}
         options={{headerTitle:'',
                   headerLeft: ()=>(<Text></Text>),
@@ -55,15 +55,15 @@ const HomeStack = (props) => {
                   )
                 }}
       ></Stack.Screen>
-    )} */}
-    <Stack.Screen name='Home' component={Home}
+    )}
+    {/* <Stack.Screen name='Home' component={Home}
       options={{headerTitle:'',
                 headerLeft: ()=>(<Text></Text>),
                 headerRight: ()=>(
                   headerRightHomeButton
                 )
               }}
-    ></Stack.Screen>
+    ></Stack.Screen> */}
     <Stack.Screen name="ListCourses" component={ListCourses}
       options={{title: title, ...stackOptions,
                 headerRight: ()=>(
@@ -187,7 +187,7 @@ const MainTab = (props) => {
       },
     })}
     tabBarOptions={{
-      activeTintColor: 'tomato',
+      activeTintColor: '#EB4848',
       inactiveTintColor: 'white',
       labelStyle: {
         fontSize: 12,

@@ -1,3 +1,3 @@
-export const ScreenKey ={
+export const ScreenKey = {
     
 }

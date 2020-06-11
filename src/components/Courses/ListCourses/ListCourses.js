@@ -1,16 +1,11 @@
-import React from 'react'
-import { connect } from 'react-redux';
-import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from 'react-native'
-import ListCoursesItem from '../ListCoursesItem/ListCoursesItem'
+import React , {useContext} from 'react';
+import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from 'react-native';
+import ListCoursesItem from '../ListCoursesItem/ListCoursesItem';
+import { context } from '../../../../App';
 
-const mapStateToProps = (state)=>{
-    return {
-        courses: state.courses
-    }
-}
-
-const ListCourses = ({courses}) => {
-    const searchView = () =>{
+const ListCourses = (props) => {
+    const courses = useContext(context).courses;
+    const searchView = () => {
         return <View style={{flexDirection: 'row', margin: 5}}>
             <TextInput placeholder='Search text' style = {styles.textSearch}></TextInput>
             <Button title='Search' style={styles.buttonSearch}></Button>
@@ -41,4 +36,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect(mapStateToProps, null)(ListCourses);
+export default ListCourses;

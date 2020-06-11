@@ -1,4 +1,14 @@
-const INITIAL_STATE = [{
+export const themesList = {
+    light: {
+        foreground: '#000000',
+        background: '#eeeeee'
+    },
+    dark: {
+        foreground: '#ffffff',
+        background: '#222222'
+    }
+};
+export const coursesList = [{
     id: 1,
     title: 'React native',
     author: 'Hai Pham',
@@ -41,12 +51,3 @@ const INITIAL_STATE = [{
     released: 'May 10, 2020',
     duration: '60 hours'
 }];
-
-export default reducer = (state = INITIAL_STATE, action) => {
-    switch (action.type) {
-        case 'GET_COURSES':
-            return state;
-        default:
-            return state
-    }
-};

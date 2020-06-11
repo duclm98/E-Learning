@@ -1,17 +1,16 @@
-import React, { useContext } from 'react';
-import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
-import { AuthContext } from '../../../../App';
+import React, { useState, useContext } from 'react';
+import { Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { context } from '../../../../App';
 
 function Login(props) {
-
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     const {
         signIn
-    } = React.useContext(AuthContext).authContext;
+    } = useContext(context).authContext;
 
-    const errStrFailedLogin = React.useContext(AuthContext).errStrFailedLogin;
+    const errStrFailedLogin = useContext(context).errStrFailedLogin;
 
     const HandleCreateAccountButton = () =>{
         props.navigation.navigate('Register');

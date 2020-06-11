@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
             flexDirection: 'row',
             justifyContent: 'space-around',
             height: 50,
-            backgroundColor: 'skyblue',
+            backgroundColor: 'blue',
             alignItems: 'center'
         },
         textInButton: {

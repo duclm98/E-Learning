@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createCollapsibleStack } from 'react-navigation-collapsible';
 import { Ionicons } from '@expo/vector-icons';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux';
 
 import Introduction from './src/components/Introduction/Introduction';
 import Login from './src/components/Authentication/Login/Login';
@@ -19,7 +21,10 @@ import Wishlist from './src/components/Main/Wishlist/Wishlist';
 import Account from './src/components/Main/Account/Account'
 import ListCourses from './src/components/Courses/ListCourses/ListCourses';
 
-import {login} from './src/core/Services/AuthenticationServices';
+import { login } from './src/core/Services/AuthenticationServices';
+
+import coursesReducer from './src/redux/Courses/Courses.Reducers/Courses.Reducers';
+const courseStore = createStore(coursesReducer);
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -239,6 +244,7 @@ export const themes = {
 export const AuthContext = React.createContext();
 export const ThemeContext = React.createContext();
 
+// const store = createStore(CoursesReducer)
 
 export default function App() {
   const [theme, setTheme] = React.useState(themes.light);
@@ -333,19 +339,21 @@ export default function App() {
   );
 
   return (
-    <ThemeContext.Provider value={{theme, setTheme}}>
-      <AuthContext.Provider value={{authContext, errStrFailedLogin}}>
-        <NavigationContainer>
-          <Stack.Navigator>
-            {state.userToken == null ? (
-              <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
-            ) : (
-              <Stack.Screen name='IdentifiedStack' component={IdentifiedStack} options={{headerShown: false}}></Stack.Screen>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </AuthContext.Provider>
-    </ThemeContext.Provider>
+    <Provider store = { courseStore }>
+      <ThemeContext.Provider value={{theme, setTheme}}>
+        <AuthContext.Provider value={{authContext, errStrFailedLogin}}>
+          <NavigationContainer>
+            <Stack.Navigator>
+              {state.userToken == null ? (
+                <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
+              ) : (
+                <Stack.Screen name='IdentifiedStack' component={IdentifiedStack} options={{headerShown: false}}></Stack.Screen>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </AuthContext.Provider>
+      </ThemeContext.Provider>
+    </Provider>
   );
 }
 

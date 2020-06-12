@@ -1,8 +1,10 @@
 import MainComponent from './src/components';
 import React, { useState, useEffect, useMemo, useReducer, createContext } from 'react';
+import { AsyncStorage } from 'react-native'
 
 import { login } from './src/core/Services/AuthenticationServices';
 
+import * as constant from './src/globals/constants';
 import { themesList, coursesList } from './src/globals/variables';
 
 export const context = createContext();
@@ -17,19 +19,19 @@ export default function App() {
           return {
             ...prevState,
             userToken: action.token,
-              isLoading: false,
+            isLoading: false,
           };
         case 'SIGN_IN':
           return {
             ...prevState,
             isSignout: false,
-              userToken: action.token,
+            userToken: action.token,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
-              userToken: null,
+            userToken: null,
           };
       }
     }, {
@@ -45,7 +47,8 @@ export default function App() {
       let userToken;
 
       try {
-        userToken = await AsyncStorage.getItem('userToken');
+        userToken = await AsyncStorage.getItem(constant.STORAGE_KEY, userToken);
+        console.log('token: ' + userToken);
       } catch (e) {
         // Restoring token failed
       }
@@ -72,9 +75,11 @@ export default function App() {
         // In the example, we'll use a dummy token
         const statusLogin = login(data.username, data.password);
         if (statusLogin.status === 200) {
+          let userToken = 'dummy-auth-token';
+          await AsyncStorage.setItem(constant.STORAGE_KEY, userToken);
           dispatch({
             type: 'SIGN_IN',
-            token: 'dummy-auth-token'
+            token: userToken
           });
         } else{
           setErrStrFailedLogin(statusLogin.errStr);

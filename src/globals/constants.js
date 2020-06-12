@@ -1,3 +1,1 @@
-export const ScreenKey = {
-    
-}
+export const STORAGE_KEY = 'ASYNC_STORAGE_MINH_DUC_REGERA_E_LEARNING'

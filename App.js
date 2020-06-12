@@ -2,113 +2,40 @@ import MainComponent from './src/components';
 import React, { useState, useEffect, useMemo, useReducer, createContext } from 'react';
 import { AsyncStorage } from 'react-native'
 
-import { login } from './src/core/Services/AuthenticationServices';
+console.disableYellowBox = true;
 
-import * as constant from './src/globals/constants';
+import { USER_TOKEN } from './src/globals/constants';
 import { themesList, coursesList } from './src/globals/variables';
 
-export const context = createContext();
+export const MainContext = createContext();
+
 export default function App() {
   const [theme, setTheme] = useState(themesList.light);
-  const [account, setAccount] = useState('');
-  const [errStrFailedLogin, setErrStrFailedLogin] = useState('');
   const [courses, setCourses] = useState(coursesList);
-  const [state, dispatch] = useReducer(
-    (prevState, action) => {
-      switch (action.type) {
-        case 'RESTORE_TOKEN':
-          return {
-            ...prevState,
-            userToken: action.token,
-            isLoading: false,
-          };
-        case 'SIGN_IN':
-          return {
-            ...prevState,
-            isSignout: false,
-            userToken: action.token,
-          };
-        case 'SIGN_OUT':
-          return {
-            ...prevState,
-            isSignout: true,
-            userToken: null,
-          };
-      }
-    }, {
-      isLoading: true,
-      isSignout: false,
-      userToken: null,
-    }
-  );
+  const [account, setAccount] = useState();
+  const [accountToken, setAccountToken] = useState();
 
   useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
-      let userToken;
+    async function fetchData() {
+      const token = await AsyncStorage.getItem(USER_TOKEN);
+      setAccountToken(token);
+    }
+    fetchData();
+  },[]);
 
-      try {
-        userToken = await AsyncStorage.getItem(constant.STORAGE_KEY, userToken);
-        const account = JSON.parse(userToken);
-        setAccount({...account});
-      } catch (e) {
-        // Restoring token failed
+  useEffect(() => {
+    async function fetchData() {
+      if(account){
+        await AsyncStorage.setItem(USER_TOKEN, JSON.stringify(account));
+        setAccountToken(JSON.stringify(account));
       }
-
-      // After restoring token, we may need to validate it in production apps
-
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      dispatch({
-        type: 'RESTORE_TOKEN',
-        token: userToken
-      });
-    };
-
-    bootstrapAsync();
-  }, []);
-
-  const authContext = useMemo(
-    () => ({
-      signIn: async data => {
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        const responsesLogin = login(data.username, data.password);
-        if (responsesLogin.status === 200) {
-          let userToken = JSON.stringify(responsesLogin.account);
-          await AsyncStorage.setItem(constant.STORAGE_KEY, userToken);
-          dispatch({
-            type: 'SIGN_IN',
-            token: userToken
-          });
-        } else{
-          setErrStrFailedLogin(responsesLogin.errStr);
-        }
-      },
-      signOut: () => dispatch({
-        type: 'SIGN_OUT'
-      }),
-      signUp: async data => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({
-          type: 'SIGN_IN',
-          token: 'dummy-auth-token'
-        });
-      },
-    }),
-    []
-  );
+    }
+    fetchData();
+  }, [account]);
 
   return (
-    <context.Provider value = {{ authContext, account, errStrFailedLogin, courses}}>
-        <MainComponent userToken = {state.userToken}></MainComponent>
-    </context.Provider>
+    <MainContext.Provider value = {{setAccount, accountToken, setAccountToken, courses}}>
+        <MainComponent accountToken = {accountToken}></MainComponent>
+    </MainContext.Provider>
   );
 }

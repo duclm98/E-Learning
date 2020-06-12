@@ -19,7 +19,7 @@ import Wishlist from './Main/Wishlist/Wishlist';
 import Account from './Main/Account/Account'
 import ListCourses from './Courses/ListCourses/ListCourses';
 
-const MainComponent = ({userToken}) => {
+const MainComponent = ({accountToken}) => {
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
 
@@ -157,7 +157,10 @@ const MainComponent = ({userToken}) => {
                                 ) : (null)}
                               </TouchableOpacity>
 
-    const headerRightHomeButton = <TouchableOpacity>
+    const headerRightHomeButton = <TouchableOpacity onPress={()=>{
+                                    props.navigation.popToTop(null);
+                                    props.navigation.navigate('Login');
+                                  }}>
                                     {!isAuth ? (
                                       <Text style={{fontSize: 20, fontWeight: 'bold', color: 'black', paddingRight: 20}}>SIGN IN</Text>
                                     ) : (
@@ -225,7 +228,7 @@ const MainComponent = ({userToken}) => {
   return(
     <NavigationContainer>
       <Stack.Navigator>
-        {userToken == null ? (
+        {accountToken == null ? (
           <Stack.Screen name='AnonymousStack' component={AnonymousStack} options={{headerShown: false}}></Stack.Screen>
         ) : (
           <Stack.Screen name='IdentifiedStack' component={IdentifiedStack} options={{headerShown: false}}></Stack.Screen>

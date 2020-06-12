@@ -1,10 +1,9 @@
 import React , {useContext} from 'react';
 import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from 'react-native';
 import ListCoursesItem from '../ListCoursesItem/ListCoursesItem';
-import { context } from '../../../../App';
+import { MainContext } from '../../../../App';
 
-const ListCourses = (props) => {
-    const courses = useContext(context).courses;
+const ListCourses = () => {
     const searchView = () => {
         return <View style={{flexDirection: 'row', margin: 5}}>
             <TextInput placeholder='Search text' style = {styles.textSearch}></TextInput>
@@ -12,13 +11,21 @@ const ListCourses = (props) => {
         </View>
     }
 
-    return <View>
-        <FlatList
-            data={courses}
-            renderItem={({item})=><ListCoursesItem item={item}></ListCoursesItem>}
-            // ListHeaderComponent={()=>searchView()}
-        ></FlatList>
-    </View>
+    return <MainContext.Consumer>
+        {
+            ({courses}) => {
+                return (
+                    <View>
+                        <FlatList
+                            data={courses}
+                            renderItem={({item})=><ListCoursesItem item={item}></ListCoursesItem>}
+                            // ListHeaderComponent={()=>searchView()}
+                        ></FlatList>
+                    </View>
+                )
+            }
+        }
+    </MainContext.Consumer>
 }
 
 const styles = StyleSheet.create({

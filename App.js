@@ -10,8 +10,9 @@ import { themesList, coursesList } from './src/globals/variables';
 export const context = createContext();
 export default function App() {
   const [theme, setTheme] = useState(themesList.light);
-  const [courses, setCourses] = useState(coursesList);
+  const [account, setAccount] = useState('');
   const [errStrFailedLogin, setErrStrFailedLogin] = useState('');
+  const [courses, setCourses] = useState(coursesList);
   const [state, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -48,7 +49,8 @@ export default function App() {
 
       try {
         userToken = await AsyncStorage.getItem(constant.STORAGE_KEY, userToken);
-        console.log('token: ' + userToken);
+        const account = JSON.parse(userToken);
+        setAccount({...account});
       } catch (e) {
         // Restoring token failed
       }
@@ -73,16 +75,17 @@ export default function App() {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        const statusLogin = login(data.username, data.password);
-        if (statusLogin.status === 200) {
-          let userToken = 'dummy-auth-token';
+
+        const responsesLogin = login(data.username, data.password);
+        if (responsesLogin.status === 200) {
+          let userToken = JSON.stringify(responsesLogin.account);
           await AsyncStorage.setItem(constant.STORAGE_KEY, userToken);
           dispatch({
             type: 'SIGN_IN',
             token: userToken
           });
         } else{
-          setErrStrFailedLogin(statusLogin.errStr);
+          setErrStrFailedLogin(responsesLogin.errStr);
         }
       },
       signOut: () => dispatch({
@@ -104,7 +107,7 @@ export default function App() {
   );
 
   return (
-    <context.Provider value = {{ authContext, errStrFailedLogin, courses}}>
+    <context.Provider value = {{ authContext, account, errStrFailedLogin, courses}}>
         <MainComponent userToken = {state.userToken}></MainComponent>
     </context.Provider>
   );

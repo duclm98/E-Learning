@@ -1,4 +1,4 @@
-import React , {useContext} from 'react';
+import React , { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-native';
 import { MainContext } from '../../../../App';
 import ImageButton from '../../Common/ImageButton';
@@ -6,8 +6,15 @@ import ImageButton from '../../Common/ImageButton';
 const CourseDetail = (props) => {
     const context = MainContext.Consumer;
     const courseDetail = context._currentValue.courseDetail;
-
+    const wishlist = context._currentValue.wishlist;
+    const setWishlist = context._currentValue.setWishlist;
     const course = props.route.params.item;
+
+    const HandleAddToWishlist = () =>{
+        setWishlist([...wishlist, course]);
+        props.navigation.canGoBack();
+    }
+
     return <ScrollView>
         <ImageButton></ImageButton>
         <View style={{marginLeft: 5, marginRight: 5}}>
@@ -18,7 +25,7 @@ const CourseDetail = (props) => {
             </View>
             <Text></Text>
             <View style={styles.buttonArea}>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={HandleAddToWishlist}>
                     <Text style={styles.textInButton}>Add to Wishlist</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>

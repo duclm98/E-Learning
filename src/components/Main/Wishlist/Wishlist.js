@@ -9,7 +9,7 @@ const Wishlist = () => {
 
     return (
         <View>
-            <ListCourses></ListCourses>
+            <ListCourses data = {wishlist}></ListCourses>
         </View>
     )
 }

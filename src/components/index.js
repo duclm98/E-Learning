@@ -46,7 +46,7 @@ const MainComponent = ({accountToken}) => {
     const headerRightHomeButton = props.route.params.headerRightHomeButton;
     const headerRightButton = props.route.params.headerRightButton;
 
-    return <Stack.Navigator initialRouteName='Home'>
+    return <Stack.Navigator>
       {createCollapsibleStack(
         <Stack.Screen name='Home' component={Home}
           options={{headerTitle:'',

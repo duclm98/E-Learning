@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, Animated } from 'react-native';
 import SectionCourses from './SectionCourses/SectionCourses';
 import ImageButton from '../../Common/ImageButton';
 import { useCollapsibleStack } from 'react-navigation-collapsible';
 
-const Home = props => {
+const Home = ({navigation}) => {
     const {
         onScroll /* Event handler */ ,
         containerPaddingTop /* number */ ,
@@ -13,13 +13,13 @@ const Home = props => {
 
     return <Animated.ScrollView onScroll={onScroll} contentContainerStyle={{ paddingTop: 0 }} scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
         <ImageButton title='NEW RELEASES'></ImageButton>
-        <SectionCourses title='Categories' navigation={props.navigation}/>
-        <SectionCourses title='Top courses in Design' navigation={props.navigation}/>
-        <SectionCourses title='Top courses in Business' navigation={props.navigation}/>
-        <SectionCourses title='Top courses in Design' navigation={props.navigation}/>
-        <SectionCourses title='Top courses in IT and Software' navigation={props.navigation}/>
-        <SectionCourses title='Top courses in Personal Development' navigation={props.navigation}/>
-        <SectionCourses title='Students are viewing' navigation={props.navigation}/>
+        <SectionCourses title='Categories' navigation={navigation}/>
+        <SectionCourses title='Top courses in Design' navigation={navigation}/>
+        <SectionCourses title='Top courses in Business' navigation={navigation}/>
+        <SectionCourses title='Top courses in Design' navigation={navigation}/>
+        <SectionCourses title='Top courses in IT and Software' navigation={navigation}/>
+        <SectionCourses title='Top courses in Personal Development' navigation={navigation}/>
+        <SectionCourses title='Students are viewing' navigation={navigation}/>
     </Animated.ScrollView>
 }
 

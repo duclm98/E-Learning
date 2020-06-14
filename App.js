@@ -12,9 +12,19 @@ export const MainContext = createContext();
 export default function App() {
   const [theme, setTheme] = useState(themesList.light);
   const [courses, setCourses] = useState(coursesList);
+  const [listCoursesData, setListCoursesData] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [account, setAccount] = useState();
   const [accountToken, setAccountToken] = useState();
+
+  const dataContext = {
+    setAccount,
+    accountToken, setAccountToken,
+    courses,
+    listCoursesData, setListCoursesData,
+    courseDetail,
+    wishlist, setWishlist
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -35,7 +45,7 @@ export default function App() {
   }, [account]);
 
   return (
-    <MainContext.Provider value = {{setAccount, accountToken, setAccountToken, courses, courseDetail, wishlist, setWishlist}}>
+    <MainContext.Provider value = {dataContext}>
         <MainComponent accountToken = {accountToken}></MainComponent>
     </MainContext.Provider>
   );

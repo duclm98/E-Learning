@@ -18,11 +18,13 @@ function SectionCourses(props) {
         });
     }
 
+    const courses1 = courses.slice(0,3)
+
     return <View>
         <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style = {styles.title}>{props.title}</Text>
             <TouchableOpacity onPress={HandleSeeAllButton}>
-                <Text style = {{fontSize: 20, paddingTop: 30, paddingRight: 20, color: 'darkslategrey'}}>
+                <Text style = {{fontSize: 20, paddingTop: 30, paddingRight: 20, color: '#EB4848'}}>
                     See all...
                 </Text>
             </TouchableOpacity>

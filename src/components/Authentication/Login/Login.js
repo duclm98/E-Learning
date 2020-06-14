@@ -1,14 +1,13 @@
-import * as React from 'react';
-import {Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { Dimensions, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity} from 'react-native';
+import { MainContext } from '../../../../App';
+import { login } from '../../../core/Services/AuthenticationServices';
 
 function Login(props) {
-
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
-
-    const {
-        signIn
-    } = React.useContext(props.route.params.authContext);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [responsesLogin, setResponsesLogin] = useState(null);
+    const [errStr, setErrStr] = useState('');
 
     const HandleCreateAccountButton = () =>{
         props.navigation.navigate('Register');
@@ -17,6 +16,21 @@ function Login(props) {
     const HandleForgetPasswordButton = () =>{
         props.navigation.navigate('ForgetPassword');
     }
+
+    const {
+        setAccount
+    } = useContext(MainContext);
+
+    useEffect(() => {
+        if(responsesLogin){
+            if(responsesLogin.status === 200){
+                const account = responsesLogin.account;
+                setAccount(account);
+            } else {
+                setErrStr(responsesLogin.errStr);
+            }
+        }
+    }, [responsesLogin]);
 
     return <View style ={styles.container}>
         <ImageBackground source = {require('../../../../assets/image_background.jpg')} style = {styles.imageBackground}>
@@ -34,16 +48,16 @@ function Login(props) {
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                     value={password}
                     onChangeText={setPassword}
                 />
+                <Text style = {{color: 'blue'}}>{errStr}</Text>
                 <TouchableOpacity onPress={HandleForgetPasswordButton}>
                     <Text style={styles.textForgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => signIn({ username, password })}>
+                <TouchableOpacity style={styles.button} onPress={() => {setResponsesLogin(login(username, password))}}>
                     <Text style={styles.textInSignInButton}>Sign in</Text>
                 </TouchableOpacity>
             </View>

@@ -1,66 +1,31 @@
-import React from 'react'
-import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from 'react-native'
-import ListCoursesItem from '../ListCoursesItem/ListCoursesItem'
+import React , {useContext} from 'react';
+import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from 'react-native';
+import ListCoursesItem from '../ListCoursesItem/ListCoursesItem';
+import { MainContext } from '../../../../App';
 
-const ListCourses = () => {
-    const courses = [{
-        id: 1,
-        title: 'React native',
-        author: 'Hai Pham',
-        level: 'Advance',
-        released: 'May 6, 2020',
-        duration: '30 hours'
-    }, {
-        id: 2,
-        title: 'NodeJS',
-        author: 'Huy Nguyen',
-        level: 'Advance',
-        released: 'May 10, 2020',
-        duration: '50 hours'
-    }, {
-        id: 3,
-        title: 'CICD',
-        author: 'Huy Nguyen',
-        level: 'Advance',
-        released: 'May 10, 2020',
-        duration: '60 hours'
-    }, {
-        id: 4,
-        title: 'React native',
-        author: 'Hai Pham',
-        level: 'Advance',
-        released: 'May 6, 2020',
-        duration: '30 hours'
-    }, {
-        id: 5,
-        title: 'NodeJS',
-        author: 'Huy Nguyen',
-        level: 'Advance',
-        released: 'May 10, 2020',
-        duration: '50 hours'
-    }, {
-        id: 6,
-        title: 'CICD',
-        author: 'Huy Nguyen',
-        level: 'Advance',
-        released: 'May 10, 2020',
-        duration: '60 hours'
-    }]
-
-    const searchView = ()=>{
+const ListCourses = (props) => {
+    const searchView = () => {
         return <View style={{flexDirection: 'row', margin: 5}}>
             <TextInput placeholder='Search text' style = {styles.textSearch}></TextInput>
             <Button title='Search' style={styles.buttonSearch}></Button>
         </View>
     }
 
-    return <View>
-        <FlatList
-            data={courses}
-            renderItem={({item})=><ListCoursesItem item={item}></ListCoursesItem>}
-            // ListHeaderComponent={()=>searchView()}
-        ></FlatList>
-    </View>
+    return <MainContext.Consumer>
+        {
+            ({courses}) => {
+                return (
+                    <View>
+                        <FlatList
+                            data={courses}
+                            renderItem={({item})=><ListCoursesItem item={item} navigation={props.navigation}></ListCoursesItem>}
+                            // ListHeaderComponent={()=>searchView()}
+                        ></FlatList>
+                    </View>
+                )
+            }
+        }
+    </MainContext.Consumer>
 }
 
 const styles = StyleSheet.create({
@@ -78,4 +43,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ListCourses
+export default ListCourses;

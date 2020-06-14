@@ -1,7 +1,16 @@
-# E-Learning
-Ứng dụng mobile cho phép học code online
+------------------------------------------------------------
+* Lê Minh Đức
+* 1612112
 
-## Sinh viên thực hiện
-1. Họ và tên: Lê Minh Đức
-2. MSSV: 1612112.
-3. Email: duc1612112@gmail.com / 1612112@student.hcmus.edu.vn
+------------------------------------------------------------
+Hướng dẫn để cài đặt và chạy ứng dụng...
+
+------------------------------------------------------------
+* Deadline 1: Mock-up UI/UX cho toàn bộ ứng dụng
+  * Commit ID: 67fbac39f3a64bb36f33013aaa653f476824d146
+
+* Deadline 2: Xây dựng ứng dụng offline cho toàn bộ ứng dụng
+  * Commit ID:
+  * Video demo: https://youtu.be/QaLMUWHARG0
+
+------------------------------------------------------------

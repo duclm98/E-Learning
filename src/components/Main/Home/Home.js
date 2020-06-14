@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
+import { StyleSheet, ScrollView, Animated } from 'react-native';
 import SectionCourses from './SectionCourses/SectionCourses';
 import ImageButton from '../../Common/ImageButton';
 import { useCollapsibleStack } from 'react-navigation-collapsible';

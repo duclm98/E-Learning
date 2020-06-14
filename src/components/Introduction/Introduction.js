@@ -12,9 +12,7 @@ const Introduction = (props) => {
     }
 
     const HandleLoginButton = () => {
-        props.navigation.navigate('Login', {
-            authContext: props.route.params.authContext
-        });
+        props.navigation.navigate('Login');
     }
 
     return (
@@ -94,7 +92,7 @@ const styles = StyleSheet.create({
             flexDirection: 'row',
             justifyContent: 'space-around',
             height: 50,
-            backgroundColor: 'skyblue',
+            backgroundColor: 'blue',
             alignItems: 'center'
         },
         textInButton: {

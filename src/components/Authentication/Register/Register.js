@@ -21,14 +21,12 @@ const Register = (props) => {
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />
                 <TextInput
                 style = {styles.textInput}
                     placeholder = 'Confirm Password'
-                    keyboardType = 'unvisible-password'
                     secureTextEntry = {true}
                     underlineColorAndroid = 'transparent'
                 />

@@ -11,6 +11,6 @@ Hướng dẫn để cài đặt và chạy ứng dụng...
 
 * Deadline 2: Xây dựng ứng dụng offline cho toàn bộ ứng dụng
   * Commit ID:
-  * Video demo: 
+  * Video demo: https://youtu.be/QaLMUWHARG0
 
 ------------------------------------------------------------

@@ -1,27 +1,32 @@
-import React from 'react'
-import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
 
 const ListCoursesItem = (props) => {
+    // const onPressItem = () => {
+    //     Alert.alert('Info',
+    //         'Item is pressed',
+    //         [{
+    //                 text: 'Ask me later',
+    //                 onPress: () => console.log('Ask me later pressed')
+    //             },
+    //             {
+    //                 text: 'Cancel',
+    //                 onPress: () => console.log('Cancel Pressed'),
+    //                 style: 'cancel'
+    //             },
+    //             {
+    //                 text: 'OK',
+    //                 onPress: () => console.log('OK Pressed')
+    //             }
+    //         ], {
+    //             cancelable: true
+    //         });
+    // };
     const onPressItem = () => {
-        Alert.alert('Info',
-            'Item is pressed',
-            [{
-                    text: 'Ask me later',
-                    onPress: () => console.log('Ask me later pressed')
-                },
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK',
-                    onPress: () => console.log('OK Pressed')
-                }
-            ], {
-                cancelable: true
-            });
-    };
+        props.navigation.navigate('CourseDetail',{
+            item:props.item,
+        });
+    }
 
     return <TouchableOpacity style = {styles.item} onPress={onPressItem}>
         <Image source = {require('../../../../assets/icon_course.png')} style = {styles.image}></Image>

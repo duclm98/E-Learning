@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, SectionList, Button, TextInput } from
 import ListCoursesItem from '../ListCoursesItem/ListCoursesItem';
 import { MainContext } from '../../../../App';
 
-const ListCourses = () => {
+const ListCourses = (props) => {
     const searchView = () => {
         return <View style={{flexDirection: 'row', margin: 5}}>
             <TextInput placeholder='Search text' style = {styles.textSearch}></TextInput>
@@ -18,7 +18,7 @@ const ListCourses = () => {
                     <View>
                         <FlatList
                             data={courses}
-                            renderItem={({item})=><ListCoursesItem item={item}></ListCoursesItem>}
+                            renderItem={({item})=><ListCoursesItem item={item} navigation={props.navigation}></ListCoursesItem>}
                             // ListHeaderComponent={()=>searchView()}
                         ></FlatList>
                     </View>

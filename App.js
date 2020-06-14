@@ -1,17 +1,18 @@
 import MainComponent from './src/components';
-import React, { useState, useEffect, useMemo, useReducer, createContext } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { AsyncStorage } from 'react-native'
 
 console.disableYellowBox = true;
 
 import { USER_TOKEN } from './src/globals/constants';
-import { themesList, coursesList } from './src/globals/variables';
+import { themesList, coursesList, courseDetail } from './src/globals/variables';
 
 export const MainContext = createContext();
 
 export default function App() {
   const [theme, setTheme] = useState(themesList.light);
   const [courses, setCourses] = useState(coursesList);
+  const [wishlist, setWishlist] = useState([]);
   const [account, setAccount] = useState();
   const [accountToken, setAccountToken] = useState();
 
@@ -34,7 +35,7 @@ export default function App() {
   }, [account]);
 
   return (
-    <MainContext.Provider value = {{setAccount, accountToken, setAccountToken, courses}}>
+    <MainContext.Provider value = {{setAccount, accountToken, setAccountToken, courses, courseDetail, wishlist, setWishlist}}>
         <MainComponent accountToken = {accountToken}></MainComponent>
     </MainContext.Provider>
   );

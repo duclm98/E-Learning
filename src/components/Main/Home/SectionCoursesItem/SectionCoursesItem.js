@@ -1,15 +1,21 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 
 function SectionCourserItem(props) {
-    return <View style = {styles.item}>
+    const onPressItem = () => {
+        props.navigation.navigate('CourseDetail',{
+            item:props.item,
+        });
+    }
+
+    return <TouchableOpacity style = {styles.item} onPress={onPressItem}>
         <Image source = {require('../../../../../assets/icon_course.png')} style = {styles.image}></Image>
         <View>
             <Text style = {styles.title}>{props.item.title}</Text>
             <Text style = {styles.text}>{props.item.author}</Text>
             <Text style = {styles.text}>{props.item.level} - {props.item.released} - {props.item.duration}</Text>
         </View>
-    </View>
+    </TouchableOpacity>
 }
 
 const styles = StyleSheet.create({

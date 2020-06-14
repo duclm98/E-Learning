@@ -1,42 +1,20 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import SectionCourserItem from '../SectionCoursesItem/SectionCoursesItem';
+import SectionCoursesItem from '../SectionCoursesItem/SectionCoursesItem';
+import { MainContext } from '../../../../../App';
 
 function SectionCourses(props) {
-    const courses = [
-        {
-            id: 1,
-            title: 'React native',
-            author: 'Hai Pham',
-            level: 'Advance',
-            released: 'May 6, 2020',
-            duration: '30 hours'
-        },
-        {
-            id: 2,
-            title: 'NodeJS',
-            author: 'Huy Nguyen',
-            level: 'Advance',
-            released: 'May 10, 2020',
-            duration: '50 hours'
-        },
-        {
-            id: 3,
-            title: 'CICD',
-            author: 'Huy Nguyen',
-            level: 'Advance',
-            released: 'May 10, 2020',
-            duration: '60 hours'
-        }
-    ]
+    const context = MainContext.Consumer;
+    const courses = context._currentValue.courses;
 
     const renderCoursesList = (courses)=>{
-        return courses.map(item => <SectionCourserItem key = {item.id} item = {item}></SectionCourserItem>)
+        return courses.map(item => <SectionCoursesItem key = {item.id} item = {item} navigation={props.navigation}></SectionCoursesItem>)
     }
 
     const HandleSeeAllButton = () => {
         props.navigation.navigate('ListCourses', {
-            title: props.title
+            title: props.title,
+            navigation: props.navigation
         });
     }
 

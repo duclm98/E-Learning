@@ -5,7 +5,6 @@ import ListCourses from '../../Courses/ListCourses/ListCourses'
 const MyCourses = () => {
     return (
         <View>
-            <Text>My Courses</Text>
             <ListCourses></ListCourses>
         </View>
     )

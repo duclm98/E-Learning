@@ -5,9 +5,6 @@ import { MainContext } from '../../../../App';
 
 const Account = (props) => {
     const HandleLogin = () =>{
-        // const backAction = NavigationActions.back({
-        //     key: null
-        // })
         props.navigation.popToTop(null);
         props.navigation.navigate('Login');
     }

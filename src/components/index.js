@@ -18,6 +18,7 @@ import MyCourses from './Main/MyCourses/MyCourses';
 import Wishlist from './Main/Wishlist/Wishlist';
 import Account from './Main/Account/Account'
 import ListCourses from './Courses/ListCourses/ListCourses';
+import CourseDetail from './Courses/CourseDetail/CourseDetail';
 
 const MainComponent = ({accountToken}) => {
   const Stack = createStackNavigator();
@@ -71,6 +72,14 @@ const MainComponent = ({accountToken}) => {
                   )
                 }}
       ></Stack.Screen>
+      <Stack.Screen name="CourseDetail" component={CourseDetail}
+        options={{title: title, ...stackOptions,
+                  headerRight: ()=>(
+                    headerRightButton
+                  ),
+                  headerShown: false
+                }}
+      ></Stack.Screen>
     </Stack.Navigator>
   }
 
@@ -110,7 +119,7 @@ const MainComponent = ({accountToken}) => {
     return <Stack.Navigator>
       <Stack.Screen name='MyCourses' component={MyCourses}
             options={{
-                      title: 'All courses', ...stackOptions,
+                      title: 'My courses', ...stackOptions,
                       headerRight: ()=>(
                         headerRightButton
                       )

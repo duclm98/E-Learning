@@ -1,11 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import SectionCoursesItem from '../SectionCoursesItem/SectionCoursesItem';
-import { MainContext } from '../../../../../App';
 
 function SectionCourses(props) {
-    const context = MainContext.Consumer;
-    const courses = context._currentValue.courses;
+    const courses = [];
 
     const renderCoursesList = (courses)=>{
         return courses.map(item => <SectionCoursesItem key = {item.id} item = {item} navigation={props.navigation}></SectionCoursesItem>)

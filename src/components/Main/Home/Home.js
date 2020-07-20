@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, ScrollView, Animated } from 'react-native';
+import React from 'react';
+import { Animated } from 'react-native';
 import SectionCourses from './SectionCourses/SectionCourses';
 import ImageButton from '../../Common/ImageButton';
 import { useCollapsibleStack } from 'react-navigation-collapsible';
@@ -7,7 +7,6 @@ import { useCollapsibleStack } from 'react-navigation-collapsible';
 const Home = ({navigation}) => {
     const {
         onScroll /* Event handler */ ,
-        containerPaddingTop /* number */ ,
         scrollIndicatorInsetTop /* number */ ,
     } = useCollapsibleStack();
 
@@ -22,13 +21,5 @@ const Home = ({navigation}) => {
         <SectionCourses title='Students are viewing' navigation={navigation}/>
     </Animated.ScrollView>
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 40,
-        paddingLeft: 5,
-    },
-})
 
 export default Home

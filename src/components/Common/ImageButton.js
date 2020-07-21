@@ -1,11 +1,11 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native'
 
-const ImageButton = (props) => {
+const ImageButton = ({title}) => {
     return <ImageBackground style={styles.imageBackground} source={require('../../../assets/image_button_background.jpeg')}>
         <TouchableOpacity style={styles.touch}>
             <Text style={styles.text}>
-                {props.title}
+                {title}
             </Text>
         </TouchableOpacity>
     </ImageBackground>

@@ -1,25 +1,62 @@
-import React from 'react';
-import { Animated } from 'react-native';
-import SectionCourses from './SectionCourses/SectionCourses';
-import ImageButton from '../../Common/ImageButton';
-import { useCollapsibleStack } from 'react-navigation-collapsible';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Animated } from "react-native";
+import SectionCourses from "./SectionCourses/SectionCourses";
+import ImageButton from "../../Common/ImageButton";
+import { useCollapsibleStack } from "react-navigation-collapsible";
 
-const Home = ({navigation}) => {
-    const {
-        onScroll /* Event handler */ ,
-        scrollIndicatorInsetTop /* number */ ,
-    } = useCollapsibleStack();
+import { categoryAcction } from "../../../redux";
 
-    return <Animated.ScrollView onScroll={onScroll} contentContainerStyle={{ paddingTop: 0 }} scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
-        <ImageButton title='NEW RELEASES'></ImageButton>
-        <SectionCourses title='Categories' navigation={navigation}/>
-        <SectionCourses title='Top courses in Design' navigation={navigation}/>
-        <SectionCourses title='Top courses in Business' navigation={navigation}/>
-        <SectionCourses title='Top courses in Design' navigation={navigation}/>
-        <SectionCourses title='Top courses in IT and Software' navigation={navigation}/>
-        <SectionCourses title='Top courses in Personal Development' navigation={navigation}/>
-        <SectionCourses title='Students are viewing' navigation={navigation}/>
+const Home = ({
+  navigation,
+  dispatch,
+  categoriesFromState,
+  changeCategoriesFromState,
+}) => {
+  const {
+    onScroll /* Event handler */,
+    scrollIndicatorInsetTop /* number */,
+  } = useCollapsibleStack();
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    if (changeCategoriesFromState) {
+      dispatch(categoryAcction.getCategories());
+    }
+  }, [changeCategoriesFromState]);
+
+  useEffect(() => {
+    setCategories(categoriesFromState);
+  }, [categoriesFromState]);
+
+  const renderCategories = (categories) => {
+    return categories.map((item) => (
+      <SectionCourses
+        key={item.id}
+        title={item.name}
+        navigation={navigation}
+      ></SectionCourses>
+    ));
+  };
+
+  return (
+    <Animated.ScrollView style={{backgroundColor:'#C6E2FF'}}
+      onScroll={onScroll}
+      contentContainerStyle={{ paddingTop: 0 }}
+      scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
+    >
+      <ImageButton title="NEW RELEASES"></ImageButton>
+      {renderCategories(categories)}
     </Animated.ScrollView>
-}
+  );
+};
 
-export default Home
+const mapStateToProps = (state) => {
+  return {
+    categoriesFromState: state.categories,
+    changeCategoriesFromState: state.changeCategories,
+  };
+};
+
+export default connect(mapStateToProps)(Home);

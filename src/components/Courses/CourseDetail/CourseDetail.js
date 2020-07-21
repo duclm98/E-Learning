@@ -1,81 +1,135 @@
-import React , { useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-native';
-import { MainContext } from '../../../../App';
-import ImageButton from '../../Common/ImageButton';
+import React, { useEffect, useState } from "react";
+import moment from "moment";
+import { connect } from "react-redux";
+import {
+  Dimensions,
+  StyleSheet,
+  Image,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import ImageButton from "../../Common/ImageButton";
+import instance from "../../../services/AxiosServices";
 
-const CourseDetail = (props) => {
-    const context = MainContext.Consumer;
-    const courseDetail = context._currentValue.courseDetail;
-    const wishlist = context._currentValue.wishlist;
-    const setWishlist = context._currentValue.setWishlist;
-    const course = props.route.params.item;
+const CourseDetail = ({ navigation, route, dispatch }) => {
+  const [id, setID] = useState(route.params.id);
+  const [course, setCourse] = useState();
 
-    const HandleAddToWishlist = () =>{
-        setWishlist([...wishlist, course]);
-        props.navigation.canGoBack();
+  useEffect(() => {
+    if (id) {
+      const getCourse = async (id) => {
+        try {
+          const course = await instance.get(`course/get-course-info?id=${id}`);
+          try {
+            const instructor = await instance.get(
+              `instructor/detail/${course.data.payload.instructorId}`
+            );
+            const data = {
+              ...course.data.payload,
+              author: instructor.data.payload.name,
+              released: moment(course.data.payload.updatedAt).format(
+                "DD/MM/YYYY"
+              ),
+            };
+            setCourse(data);
+          } catch (error) {}
+        } catch (error) {}
+      };
+      getCourse(id);
+      setID(null);
     }
+  }, [id]);
 
-    return <ScrollView>
-        <ImageButton></ImageButton>
-        <View style={{marginLeft: 5, marginRight: 5}}>
+  const HandleAddToWishlist = () => {
+    setWishlist([...wishlist, course]);
+    navigation.canGoBack();
+  };
+
+  const renderRequirement = (requirements) => {
+    return requirements.map((i) => <Text style={styles.text}>{i}</Text>);
+  };
+
+  const renderLearnWhat = (learnWhat) => {
+    return learnWhat.map((i) => <Text style={styles.text}>{i}</Text>);
+  };
+
+  return (
+    <View style={{backgroundColor:'#C6E2FF'}}>
+      {course ? (
+        <ScrollView>
+          <Image source={{ uri: course.imageUrl }} style={{height: 200, resizeMode: 'cover'}}></Image>
+          <View style={{ marginLeft: 5, marginRight: 5 }}>
             <View>
-                <Text style = {{fontSize: 25, fontWeight: 'bold'}}>{course.title}</Text>
-                <Text style = {{fontSize: 20}}>{course.author}</Text>
-                <Text style = {{fontSize: 20}}>{course.level} - {course.released} - {course.duration}</Text>
+              <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                {course.title}
+              </Text>
+              <Text style={{ fontSize: 15 }}>{course.subtitle}</Text>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{course.author}</Text>
+              <Text style={{ fontSize: 15, fontWeight:'bold' }}>
+                {course.released} - {course.totalHours}
+              </Text>
             </View>
             <Text></Text>
             <View style={styles.buttonArea}>
-                <TouchableOpacity style={styles.button} onPress={HandleAddToWishlist}>
-                    <Text style={styles.textInButton}>Add to Wishlist</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.textInButton}>Download</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={HandleAddToWishlist}
+              >
+                <Text style={styles.textInButton}>Add to Wishlist</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.textInButton}>Download</Text>
+              </TouchableOpacity>
             </View>
             <Text></Text>
             <View>
-                <Text style = {styles.title}>Requirements</Text>
-                <Text style = {styles.text}>{courseDetail.Requirements}</Text>
-                <Text></Text>
-                <Text style = {styles.title}>Description</Text>
-                <Text style = {styles.text}>{courseDetail.Description}</Text>
-                <Text></Text>
-                <Text style = {styles.title}>Who this course is for:</Text>
-                <Text style = {styles.text}>{courseDetail.for}</Text>
+              <Text style={styles.title}>Requirements</Text>
+              {renderRequirement(course.requirement)}
+              <Text></Text>
+              <Text style={styles.title}>Description</Text>
+              <Text style={styles.text}>{course.description}</Text>
+              <Text></Text>
+              <Text style={styles.title}>Learn what?</Text>
+              {renderLearnWhat(course.learnWhat)}
             </View>
-        </View>
-    </ScrollView>
-}
+          </View>
+        </ScrollView>
+      ) : null}
+    </View>
+  );
+};
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-    text: {
-        fontSize: 15
-    },
-    buttonArea:{
-        flexDirection:'row',
-        justifyContent:'space-around'
-    },
-    button: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        backgroundColor:'#EB4848',
-        width: (windowWidth)/2-10,
-        height: 40
-    },
-    textInButton: {
-        textAlign: 'center',
-        textAlignVertical: 'center',
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white'
-    },
-})
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  text: {
+    fontSize: 15,
+  },
+  buttonArea: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  button: {
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "#EB4848",
+    width: windowWidth / 2 - 10,
+    height: 40,
+  },
+  textInButton: {
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+});
 
-export default CourseDetail;
+export default connect()(CourseDetail);

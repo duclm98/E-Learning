@@ -5,7 +5,7 @@ import moment from "moment";
 import instance from "./services/AxiosServices";
 
 export const accountAction = {
-    login: (account) => async (dispatch) => {
+    login: (account) => async dispatch => {
         const email = account.email.toLowerCase();
         try {
             const {
@@ -21,25 +21,27 @@ export const accountAction = {
             await AsyncStorage.setItem("ACCESS_TOKEN", accessToken);
             await AsyncStorage.setItem("ACCOUNT_TOKEN", accountToken);
 
-            return dispatch({
+            dispatch({
                 type: "LOGIN_SUCCESS",
                 payload: {
                     accessToken,
                     account: data.userInfo,
                 },
             });
+
+            return {
+                status: true
+            }
         } catch (error) {
-            let status = "Có lỗi xảy ra, vui lòng thử lại.";
+            let msg = "Có lỗi xảy ra, vui lòng thử lại.";
             if (error.response) {
-                status = error.response.data;
+                msg = error.response.data.message;
             }
 
-            return dispatch({
-                type: "LOGIN_FAILED",
-                payload: {
-                    status,
-                },
-            });
+            return {
+                status: false,
+                msg
+            }
         }
     },
     logout: () => async (dispatch) => {
@@ -50,6 +52,56 @@ export const accountAction = {
             type: "LOGOUT_SUCCESS",
         });
     },
+    createAccount: (email, password, phone) => async _ =>{
+        try {
+            const {
+                data
+            } = await instance.post("user/register", {
+                email: email.toLowerCase(),
+                password,
+                phone
+            });
+
+            return {
+                status: true,
+                msg: data.message
+            }
+        } catch (error) {
+            let msg = "Có lỗi xảy ra, vui lòng thử lại.";
+            if (error.response) {
+                msg = error.response.data.message;
+            }
+
+            return {
+                status: false,
+                msg
+            }
+        }
+    },
+    forgetPassword: (email) => async _ => {
+        try {
+            const {
+                data
+            } = await instance.post("user/forget-pass/send-email", {
+                email: email.toLowerCase()
+            });
+
+            return {
+                status: true,
+                msg: data.message
+            }
+        } catch (error) {
+            let msg = "Có lỗi xảy ra, vui lòng thử lại.";
+            if (error.response) {
+                msg = error.response.data.message;
+            }
+
+            return {
+                status: false,
+                msg
+            }
+        }
+    }
 };
 
 export const categoryAcction = {
@@ -85,7 +137,7 @@ export const courseAcction = {
                         author: instructor.data.payload.name
                     }
                 } catch (error) {
-                    
+
                 }
             }));
 
@@ -121,36 +173,28 @@ const initialState = {
 
 export default (state = initialState, action) => {
     if (action.type === "LOGIN_SUCCESS") {
-        state.accessToken = action.payload.accessToken;
-        state.account = action.payload.account;
         return {
             ...state,
             accessToken: action.payload.accessToken,
             account: action.payload.account,
         };
-    } else if (action.type === "LOGIN_FAILED") {
-        return {
-            status: action.payload.status,
-        };
     } else if (action.type === "LOGOUT_SUCCESS") {
-        state.accessToken = null;
-        state.account = null;
         return {
             ...state,
             accessToken: null,
             account: null,
         };
     } else if (action.type === "GET_CATEGORIES") {
-        state.categories = action.payload.categories;
-        state.changeCategories = false;
         return {
             ...state,
+            categories: action.payload.categories,
+            changeCategories: false
         };
     } else if (action.type === "GET_COURSES") {
-        state.courses = action.payload.courses;
-        state.changeCourses = false;
         return {
             ...state,
+            courses: action.payload.courses,
+            changeCourses: false,
         };
     }
     return state;

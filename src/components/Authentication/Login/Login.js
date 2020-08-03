@@ -12,7 +12,7 @@ import {
 
 import { accountAction } from "../../../redux";
 
-function Login({ navigation, dispatch, statusFromState }) {
+function Login({ navigation, dispatch }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
@@ -25,12 +25,14 @@ function Login({ navigation, dispatch, statusFromState }) {
     navigation.navigate("ForgetPassword");
   };
 
-  useEffect(() => {
-    setStatus(statusFromState);
-  }, [statusFromState]);
-
-  const HandleLogin = () => {
-    dispatch(accountAction.login({ email, password }));
+  const HandleLogin = async () => {
+    if (email === "" || password === "") {
+      return setStatus("Vui lòng nhập đủ thông tin cần thiết");
+    }
+    const login = await dispatch(accountAction.login({ email, password }));
+    if (!login.status) {
+      return setStatus(login.msg);
+    }
   };
 
   return (
@@ -146,9 +148,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  return {
-    statusFromState: state.status,
-  };
+  return {};
 };
 
 export default connect(mapStateToProps)(Login);

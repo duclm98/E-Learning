@@ -3,6 +3,7 @@ import {
 } from "react-native";
 import moment from "moment";
 import instance from "./services/AxiosServices";
+import * as method from './methods';
 
 export const accountAction = {
     login: (account) => async dispatch => {
@@ -52,7 +53,7 @@ export const accountAction = {
             type: "LOGOUT_SUCCESS",
         });
     },
-    createAccount: (email, password, phone) => async _ =>{
+    createAccount: (email, password, phone) => async _ => {
         try {
             const {
                 data
@@ -105,27 +106,56 @@ export const accountAction = {
 };
 
 export const categoryAcction = {
-    getCategories: () => async (dispatch) => {
+    getCategories: () => async _ => {
         try {
             const {
                 data
             } = await instance.get("category/all");
-            return dispatch({
-                type: "GET_CATEGORIES",
-                payload: {
-                    categories: data.payload,
-                },
-            });
-        } catch (error) {}
+
+            return {
+                status: true,
+                data: data.payload
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
     },
 };
 
 export const courseAcction = {
-    getCourses: (limit) => async (dispatch) => {
+    getRecommendCourses: (limit, offset) => async _ => {
+        try {
+            const account = await method.getAccountInfo();
+            const courses = await instance.get(`user/recommend-course/${account.id}/${limit}/${offset}`);
+
+            const data = await Promise.all(courses.data.payload.map(async (i) => {
+                try {
+                    const instructor = await instance.get(`instructor/detail/${i.instructorId}`);
+                    return {
+                        ...i,
+                        released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                        author: instructor.data.payload.name
+                    }
+                } catch (error) {}
+            }));
+
+            return {
+                status: true,
+                data
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
+    },
+    getNewCourses: (limit, page) => async (dispatch) => {
         try {
             const courses = await instance.post("course/top-new", {
                 limit: limit,
-                page: 1,
+                page: page,
             });
 
             const data = await Promise.all(courses.data.payload.map(async (i) => {
@@ -136,26 +166,54 @@ export const courseAcction = {
                         released: moment(i.updatedAt).format("DD/MM/YYYY"),
                         author: instructor.data.payload.name
                     }
-                } catch (error) {
-
-                }
+                } catch (error) {}
             }));
 
-            return dispatch({
-                type: "GET_COURSES",
-                payload: {
-                    courses: data,
-                },
+            return {
+                status: true,
+                data
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
+    },
+    getRateCourses: (limit, page) => async (dispatch) => {
+        try {
+            const courses = await instance.post("course/top-rate", {
+                limit: limit,
+                page: page,
             });
-        } catch (error) {}
+
+            const data = await Promise.all(courses.data.payload.map(async (i) => {
+                try {
+                    const instructor = await instance.get(`instructor/detail/${i.instructorId}`);
+                    return {
+                        ...i,
+                        released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                        author: instructor.data.payload.name
+                    }
+                } catch (error) {}
+            }));
+
+            return {
+                status: true,
+                data
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
     },
 };
 
 let accessToken = null;
 let account = null;
 async function fetchToken() {
-    accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
-    const accountToken = await AsyncStorage.getItem(ACCOUNT_TOKEN);
+    accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+    const accountToken = await AsyncStorage.getItem('ACCOUNT_TOKEN');
     if (accountToken) {
         account = JSON.parse(accountToken);
     }
@@ -165,10 +223,6 @@ fetchToken();
 const initialState = {
     accessToken,
     account,
-    categories: [],
-    changeCategories: true,
-    courses: [],
-    changeCourses: true,
 };
 
 export default (state = initialState, action) => {
@@ -183,18 +237,6 @@ export default (state = initialState, action) => {
             ...state,
             accessToken: null,
             account: null,
-        };
-    } else if (action.type === "GET_CATEGORIES") {
-        return {
-            ...state,
-            categories: action.payload.categories,
-            changeCategories: false
-        };
-    } else if (action.type === "GET_COURSES") {
-        return {
-            ...state,
-            courses: action.payload.courses,
-            changeCourses: false,
         };
     }
     return state;

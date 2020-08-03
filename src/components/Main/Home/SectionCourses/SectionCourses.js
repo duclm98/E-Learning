@@ -15,35 +15,49 @@ function SectionCourses({
   navigation,
   dispatch,
   title,
-  coursesFromState,
-  changeCoursesFromState,
+  type,
 }) {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    if (changeCoursesFromState) {
-      dispatch(courseAcction.getCourses(5));
+    const getCourses = async () =>{
+      if (type === "1") {
+        const data = await dispatch(courseAcction.getNewCourses(5, 1));
+        if(data.status){
+          setCourses(data.data);
+        }
+      } else if (type === "2") {
+        const data = await dispatch(courseAcction.getRateCourses(5, 1));
+        if(data.status){
+          setCourses(data.data);
+        }
+      } else if (type === "3") {
+        const data = await dispatch(courseAcction.getRecommendCourses(5, 1));
+        if(data.status){
+          setCourses(data.data);
+        }
+      }
     }
-  }, [changeCoursesFromState]);
-
-  useEffect(() => {
-    setCourses(coursesFromState);
-  }, [coursesFromState]);
+    getCourses();
+  }, [type]);
 
   const renderCoursesItem = (courses) => {
-    return courses.map((item) => (
-      <SectionCoursesItem
-        key={item.id}
-        item={item}
-        id={item.id}
-        navigation={navigation}
-      ></SectionCoursesItem>
-    ));
+    if (courses) {
+      return courses.map((item) => (
+        <SectionCoursesItem
+          key={item.id}
+          item={item}
+          id={item.id}
+          navigation={navigation}
+        ></SectionCoursesItem>
+      ));
+    }
   };
 
   const HandleSeeAllButton = () => {
     navigation.navigate("ListCourses", {
       title: title,
+      type: type,
       navigation: navigation,
     });
   };
@@ -87,8 +101,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    coursesFromState: state.courses,
-    changeCoursesFromState: state.changeCourses,
   };
 };
 

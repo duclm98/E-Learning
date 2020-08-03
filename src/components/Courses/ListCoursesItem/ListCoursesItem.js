@@ -1,63 +1,61 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
+import React from "react";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 
-const ListCoursesItem = (props) => {
-    // const onPressItem = () => {
-    //     Alert.alert('Info',
-    //         'Item is pressed',
-    //         [{
-    //                 text: 'Ask me later',
-    //                 onPress: () => console.log('Ask me later pressed')
-    //             },
-    //             {
-    //                 text: 'Cancel',
-    //                 onPress: () => console.log('Cancel Pressed'),
-    //                 style: 'cancel'
-    //             },
-    //             {
-    //                 text: 'OK',
-    //                 onPress: () => console.log('OK Pressed')
-    //             }
-    //         ], {
-    //             cancelable: true
-    //         });
-    // };
-    const onPressItem = () => {
-        props.navigation.navigate('CourseDetail',{
-            item:props.item,
-        });
-    }
+const ListCoursesItem = ({ navigation, item }) => {
+  const onPressItem = (id) => {
+    navigation.navigate("CourseDetail", {
+      id,
+    });
+  };
 
-    return <TouchableOpacity style = {styles.item} onPress={onPressItem}>
-        <Image source = {require('../../../../assets/icon_course.png')} style = {styles.image}></Image>
-        <View>
-            <Text style = {styles.title}>{props.item.title}</Text>
-            <Text style = {styles.text}>{props.item.author}</Text>
-            <Text style = {styles.text}>{props.item.level} - {props.item.released} - {props.item.duration}</Text>
-        </View>
+  return (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => {
+        onPressItem(item.id);
+      }}
+    >
+      <Image source={{ uri: item.imageUrl }} style={styles.image}></Image>
+      <View style={{ width: windowWidth - 120 }}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.text}>{item.author}</Text>
+        <Text style={styles.text}>
+          {item.released} - {item.totalHours}
+        </Text>
+      </View>
     </TouchableOpacity>
-}
+  );
+};
+
+const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
-    item: {
-        flexDirection: 'row',
-        borderBottomColor: 'gray',
-        borderBottomWidth: 1,
-    },
-    image: {
-        margin: 5,
-        width: 120,
-        height: 100,
-        resizeMode: 'stretch',
-        borderRadius: 5
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-    text: {
-        fontSize: 15
-    }
-})
+  item: {
+    flexDirection: "row",
+    borderBottomColor: "gray",
+    borderBottomWidth: 1,
+  },
+  image: {
+    margin: 5,
+    width: 120,
+    height: 100,
+    resizeMode: "stretch",
+    borderRadius: 5,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  text: {
+    fontSize: 15,
+  },
+});
 
-export default ListCoursesItem
+export default ListCoursesItem;

@@ -21,12 +21,14 @@ import Account from "./Main/Account/Account";
 import ListCourses from "./Courses/ListCourses/ListCourses";
 import CourseDetail from "./Courses/CourseDetail/CourseDetail";
 
-const MainComponent = ({ accessTokenFromState }) => {
+const MainComponent = ({ accessTokenFromState, accountFromState }) => {
   const [accessToken, setAccessToken] = useState();
+  const [account, setAccount] = useState();
 
   useEffect(() => {
     setAccessToken(accessTokenFromState);
-  }, [accessTokenFromState]);
+    setAccount(accountFromState);
+  }, [accessTokenFromState, accountFromState]);
 
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -350,7 +352,7 @@ const MainComponent = ({ accessTokenFromState }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {accessToken == null ? (
+        {accessToken == null || account == null ? (
           <Stack.Screen
             name="AnonymousStack"
             component={AnonymousStack}
@@ -371,6 +373,7 @@ const MainComponent = ({ accessTokenFromState }) => {
 const mapStateToProps = (state) => {
   return {
     accessTokenFromState: state.accessToken,
+    accountFromState: state.account
   };
 };
 

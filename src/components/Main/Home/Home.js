@@ -5,40 +5,14 @@ import SectionCourses from "./SectionCourses/SectionCourses";
 import ImageButton from "../../Common/ImageButton";
 import { useCollapsibleStack } from "react-navigation-collapsible";
 
-import { categoryAcction } from "../../../redux";
-
 const Home = ({
   navigation,
   dispatch,
-  categoriesFromState,
-  changeCategoriesFromState,
 }) => {
   const {
     onScroll /* Event handler */,
     scrollIndicatorInsetTop /* number */,
   } = useCollapsibleStack();
-
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    if (changeCategoriesFromState) {
-      dispatch(categoryAcction.getCategories());
-    }
-  }, [changeCategoriesFromState]);
-
-  useEffect(() => {
-    setCategories(categoriesFromState);
-  }, [categoriesFromState]);
-
-  const renderCategories = (categories) => {
-    return categories.map((item) => (
-      <SectionCourses
-        key={item.id}
-        title={item.name}
-        navigation={navigation}
-      ></SectionCourses>
-    ));
-  };
 
   return (
     <Animated.ScrollView style={{backgroundColor:'#C6E2FF'}}
@@ -47,15 +21,16 @@ const Home = ({
       scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
     >
       <ImageButton title="NEW RELEASES"></ImageButton>
-      {renderCategories(categories)}
+      <SectionCourses key='1' type='1' title='Khóa học mới nhất' navigation={navigation}></SectionCourses>
+      <SectionCourses key='2' type='2' title='Khóa học nổi bật' navigation={navigation}></SectionCourses>
+      <SectionCourses key='3' type='3' title='Đề xuất cho bạn' navigation={navigation}></SectionCourses>
+      <SectionCourses key='4' type='4' title='Khóa học của tôi' navigation={navigation}></SectionCourses>
     </Animated.ScrollView>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    categoriesFromState: state.categories,
-    changeCategoriesFromState: state.changeCategories,
   };
 };
 

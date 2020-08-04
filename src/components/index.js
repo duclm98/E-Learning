@@ -100,33 +100,15 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
   };
 
   const SearchStack = (props) => {
-    const searchView = (
-      <View style={{ flexDirection: "row", margin: 5 }}>
-        <TextInput
-          placeholder="Search text"
-          style={{
-            flex: 1,
-            borderColor: "gray",
-            borderWidth: 1,
-            paddingLeft: 10,
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10,
-          }}
-        ></TextInput>
-        <Button title="Search" style={{ width: 40, height: 60 }}></Button>
-      </View>
-    );
-
     const headerRightButton = props.route.params.headerRightButton;
-
     return (
       <Stack.Navigator>
         <Stack.Screen
           name="Search"
           component={Search}
           options={{
+            title:"Search",
             ...stackOptions,
-            headerTitle: () => searchView,
             headerRight: () => headerRightButton,
           }}
         ></Stack.Screen>
@@ -373,7 +355,7 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
 const mapStateToProps = (state) => {
   return {
     accessTokenFromState: state.accessToken,
-    accountFromState: state.account
+    accountFromState: state.account,
   };
 };
 

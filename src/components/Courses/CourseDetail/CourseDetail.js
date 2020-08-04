@@ -56,20 +56,26 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
   };
 
   return (
-    <View style={{backgroundColor:'#C6E2FF'}}>
+    <View style={{ backgroundColor: "#C6E2FF" }}>
       {course ? (
         <ScrollView>
-          <Image source={{ uri: course.imageUrl }} style={{height: 200, resizeMode: 'cover'}}></Image>
+          <Image
+            source={{ uri: course.imageUrl }}
+            style={{ height: 200, resizeMode: "cover" }}
+          ></Image>
           <View style={{ marginLeft: 5, marginRight: 5 }}>
             <View>
               <Text style={{ fontSize: 25, fontWeight: "bold" }}>
                 {course.title}
               </Text>
               <Text style={{ fontSize: 15 }}>{course.subtitle}</Text>
-              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{course.author}</Text>
-              <Text style={{ fontSize: 15, fontWeight:'bold' }}>
+              <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                {course.author}
+              </Text>
+              <Text style={{ fontSize: 15, fontWeight: "bold" }}>
                 {course.released} - {course.totalHours}
               </Text>
+              <Text style={{ fontSize: 15, fontWeight: "bold" }}>Giá: {course.price} VNĐ</Text>
             </View>
             <Text></Text>
             <View style={styles.buttonArea}>

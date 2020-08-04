@@ -15,7 +15,10 @@ function SectionCourserItem({ navigation, item }) {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.text}>{item.author}</Text>
         <Text style={styles.text}>
-          {item.released} - {item.totalHours}
+          {item.released} - {item.totalHours}H
+        </Text>
+        <Text style={styles.text}>
+          Giá: {item.price} VNĐ
         </Text>
       </View>
     </TouchableOpacity>

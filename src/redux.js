@@ -207,22 +207,59 @@ export const courseAcction = {
             }
         }
     },
+    searchCourses: (keyword, limit, offset) => async _ => {
+        try {
+            const courses = await instance.post("course/search", {
+                keyword: keyword,
+                opt: {
+                    sort: {
+                        attribute: "updatedAt",
+                        rule: "DESC"
+                    }
+                },
+                limit: limit,
+                offset: offset
+            });
+
+            const data = courses.data.payload.rows.map(i => {
+                return {
+                    ...i,
+                    author: i.name,
+                    released: moment(i.updatedAt).format("DD/MM/YYYY")
+                }
+            })
+
+            return {
+                status: true,
+                data: data
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
+    },
 };
 
 let accessToken = null;
 let account = null;
-async function fetchToken() {
+let historySearch = [];
+async function fetchDataFromStorage() {
     accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-    const accountToken = await AsyncStorage.getItem('ACCOUNT_TOKEN');
-    if (accountToken) {
-        account = JSON.parse(accountToken);
+
+    if (accessToken) {
+        const accountToken = await AsyncStorage.getItem('ACCOUNT_TOKEN');
+        if (accountToken) {
+            account = JSON.parse(accountToken);
+        }
     }
 }
-fetchToken();
+fetchDataFromStorage();
 
 const initialState = {
     accessToken,
     account,
+    historySearch
 };
 
 export default (state = initialState, action) => {
@@ -238,6 +275,16 @@ export default (state = initialState, action) => {
             accessToken: null,
             account: null,
         };
+    } else if (action.type === 'SEARCH_SUCCESS') {
+        return {
+            ...state,
+            searchCourses: action.payload.courses
+        }
+    } else if (action.type === 'SEARCH_FAILED') {
+        return {
+            ...state,
+            searchCourses: []
+        }
     }
     return state;
 };

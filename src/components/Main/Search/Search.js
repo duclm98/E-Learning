@@ -11,6 +11,10 @@ const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
   const [selectedItems, setSelectedItems] = useState();
   const [keyword, setKeyword] = useState("");
   const [items, setItems] = useState(historySearchFromState);
+  const [category, setCategery] = useState({
+    type: 1,
+    data: [],
+  });
   const [page, setPage] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -34,9 +38,36 @@ const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
     }
   };
 
+  // Phân loại tìm kiếm
+  useEffect(() => {
+    if (category.type === 1) { // Không phân loại
+      setCategery((prev) => ({
+        ...prev,
+        data: courses,
+      }));
+    } else if (category.type === 2) { // Phân loại theo tác gỉa
+      const data = [...courses];
+      let index = 0;
+      while (index < data.length - 1) {
+        for (let i = index + 1; i < data.length; i++) {
+          if (data[index].author === data[i].author) {
+            index++;
+            const temp = { ...data[index] };
+            data[index] = { ...data[i] };
+            data[i] = { ...temp };
+          }
+        }
+        index++;
+      }
+      setCategery((prev) => ({
+        ...prev,
+        data,
+      }));
+    }
+  }, [category.type, courses]);
+
   // Phân trang
   // 1 page chứa 5 items
-
   const handlePrev = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -49,10 +80,11 @@ const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
     }
   };
 
+  // Xử lý phân trang
   useEffect(() => {
-    const tempData = courses.slice(currentPage * 5 - 5, currentPage * 5);
+    const tempData = category.data.slice(currentPage * 5 - 5, currentPage * 5);
     setPage(tempData);
-  }, [courses, currentPage]);
+  }, [category.data, currentPage]);
 
   const renderSearchView = () => {
     return (
@@ -98,6 +130,52 @@ const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
         />
         <View style={{ padding: 5 }}>
           <Button title="Tìm kiếm" onPress={handelSearch}></Button>
+        </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <View style={{ padding: 5, width: 75 }}>
+            <Text style={{ paddingTop: 8, fontWeight: "bold" }}>
+              Phân loại:
+            </Text>
+          </View>
+          <View style={{ flex: 1, padding: 5 }}>
+            <Button
+              title="Tất cả"
+              onPress={() => {
+                setCategery((prev) => ({
+                  ...prev,
+                  type: 1,
+                }));
+              }}
+            ></Button>
+          </View>
+          <View style={{ flex: 1, padding: 5 }}>
+            <Button
+              title="Tác giả"
+              onPress={() => {
+                setCategery((prev) => ({
+                  ...prev,
+                  type: 2,
+                }));
+              }}
+            ></Button>
+          </View>
+          <View style={{ padding: 5, width: 100 }}>
+            <Button
+              title="Khóa học"
+              onPress={() => {
+                setCategery((prev) => ({
+                  ...prev,
+                  type: 3,
+                }));
+              }}
+            ></Button>
+          </View>
         </View>
         <View
           style={{

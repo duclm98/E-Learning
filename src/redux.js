@@ -3,10 +3,36 @@ import {
 } from "react-native";
 import moment from "moment";
 import instance from "./services/AxiosServices";
-import * as method from './methods';
+import * as method from "./methods";
+
+let accessToken = null;
+let account = null;
+let historySearch = [];
+async function fetchDataFromStorage() {
+    accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+
+    if (accessToken) {
+        const accountToken = await AsyncStorage.getItem("ACCOUNT_TOKEN");
+        if (accountToken) {
+            account = JSON.parse(accountToken);
+        }
+
+        const historySearchToken = await AsyncStorage.getItem("HISTORY_SEARCH");
+        if (historySearchToken) {
+            const historySearchTemp = historySearchToken.split(",");
+            historySearch = historySearchTemp.map((item, index) => {
+                return {
+                    id: index,
+                    name: item
+                }
+            })
+        }
+    }
+}
+fetchDataFromStorage();
 
 export const accountAction = {
-    login: (account) => async dispatch => {
+    login: (account) => async (dispatch) => {
         const email = account.email.toLowerCase();
         try {
             const {
@@ -31,8 +57,8 @@ export const accountAction = {
             });
 
             return {
-                status: true
-            }
+                status: true,
+            };
         } catch (error) {
             let msg = "Có lỗi xảy ra, vui lòng thử lại.";
             if (error.response) {
@@ -41,8 +67,8 @@ export const accountAction = {
 
             return {
                 status: false,
-                msg
-            }
+                msg,
+            };
         }
     },
     logout: () => async (dispatch) => {
@@ -53,20 +79,20 @@ export const accountAction = {
             type: "LOGOUT_SUCCESS",
         });
     },
-    createAccount: (email, password, phone) => async _ => {
+    createAccount: (email, password, phone) => async (_) => {
         try {
             const {
                 data
             } = await instance.post("user/register", {
                 email: email.toLowerCase(),
                 password,
-                phone
+                phone,
             });
 
             return {
                 status: true,
-                msg: data.message
-            }
+                msg: data.message,
+            };
         } catch (error) {
             let msg = "Có lỗi xảy ra, vui lòng thử lại.";
             if (error.response) {
@@ -75,22 +101,22 @@ export const accountAction = {
 
             return {
                 status: false,
-                msg
-            }
+                msg,
+            };
         }
     },
-    forgetPassword: (email) => async _ => {
+    forgetPassword: (email) => async (_) => {
         try {
             const {
                 data
             } = await instance.post("user/forget-pass/send-email", {
-                email: email.toLowerCase()
+                email: email.toLowerCase(),
             });
 
             return {
                 status: true,
-                msg: data.message
-            }
+                msg: data.message,
+            };
         } catch (error) {
             let msg = "Có lỗi xảy ra, vui lòng thử lại.";
             if (error.response) {
@@ -99,14 +125,14 @@ export const accountAction = {
 
             return {
                 status: false,
-                msg
-            }
+                msg,
+            };
         }
-    }
+    },
 };
 
 export const categoryAcction = {
-    getCategories: () => async _ => {
+    getCategories: () => async (_) => {
         try {
             const {
                 data
@@ -114,41 +140,47 @@ export const categoryAcction = {
 
             return {
                 status: true,
-                data: data.payload
-            }
+                data: data.payload,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
 };
 
 export const courseAcction = {
-    getRecommendCourses: (limit, offset) => async _ => {
+    getRecommendCourses: (limit, offset) => async (_) => {
         try {
             const account = await method.getAccountInfo();
-            const courses = await instance.get(`user/recommend-course/${account.id}/${limit}/${offset}`);
+            const courses = await instance.get(
+                `user/recommend-course/${account.id}/${limit}/${offset}`
+            );
 
-            const data = await Promise.all(courses.data.payload.map(async (i) => {
-                try {
-                    const instructor = await instance.get(`instructor/detail/${i.instructorId}`);
-                    return {
-                        ...i,
-                        released: moment(i.updatedAt).format("DD/MM/YYYY"),
-                        author: instructor.data.payload.name
-                    }
-                } catch (error) {}
-            }));
+            const data = await Promise.all(
+                courses.data.payload.map(async (i) => {
+                    try {
+                        const instructor = await instance.get(
+                            `instructor/detail/${i.instructorId}`
+                        );
+                        return {
+                            ...i,
+                            released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                            author: instructor.data.payload.name,
+                        };
+                    } catch (error) {}
+                })
+            );
 
             return {
                 status: true,
-                data
-            }
+                data,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
     getNewCourses: (limit, page) => async (dispatch) => {
@@ -158,25 +190,29 @@ export const courseAcction = {
                 page: page,
             });
 
-            const data = await Promise.all(courses.data.payload.map(async (i) => {
-                try {
-                    const instructor = await instance.get(`instructor/detail/${i.instructorId}`);
-                    return {
-                        ...i,
-                        released: moment(i.updatedAt).format("DD/MM/YYYY"),
-                        author: instructor.data.payload.name
-                    }
-                } catch (error) {}
-            }));
+            const data = await Promise.all(
+                courses.data.payload.map(async (i) => {
+                    try {
+                        const instructor = await instance.get(
+                            `instructor/detail/${i.instructorId}`
+                        );
+                        return {
+                            ...i,
+                            released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                            author: instructor.data.payload.name,
+                        };
+                    } catch (error) {}
+                })
+            );
 
             return {
                 status: true,
-                data
-            }
+                data,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
     getRateCourses: (limit, page) => async (dispatch) => {
@@ -186,80 +222,86 @@ export const courseAcction = {
                 page: page,
             });
 
-            const data = await Promise.all(courses.data.payload.map(async (i) => {
-                try {
-                    const instructor = await instance.get(`instructor/detail/${i.instructorId}`);
-                    return {
-                        ...i,
-                        released: moment(i.updatedAt).format("DD/MM/YYYY"),
-                        author: instructor.data.payload.name
-                    }
-                } catch (error) {}
-            }));
+            const data = await Promise.all(
+                courses.data.payload.map(async (i) => {
+                    try {
+                        const instructor = await instance.get(
+                            `instructor/detail/${i.instructorId}`
+                        );
+                        return {
+                            ...i,
+                            released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                            author: instructor.data.payload.name,
+                        };
+                    } catch (error) {}
+                })
+            );
 
             return {
                 status: true,
-                data
-            }
+                data,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
-    searchCourses: (keyword, limit, offset) => async _ => {
+    searchCourses: (keyword, limit, offset) => async dispatch => {
         try {
             const courses = await instance.post("course/search", {
                 keyword: keyword,
                 opt: {
                     sort: {
                         attribute: "updatedAt",
-                        rule: "DESC"
-                    }
+                        rule: "DESC",
+                    },
                 },
                 limit: limit,
-                offset: offset
+                offset: offset,
             });
 
-            const data = courses.data.payload.rows.map(i => {
+            const data = courses.data.payload.rows.map((i) => {
                 return {
                     ...i,
                     author: i.name,
-                    released: moment(i.updatedAt).format("DD/MM/YYYY")
+                    released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                };
+            });
+
+            if (keyword !== "") {
+                let historySearchTempToken = await AsyncStorage.getItem("HISTORY_SEARCH");
+                if (historySearchTempToken) {
+                    const historySearchTemp = historySearchTempToken.split(',');
+                    await AsyncStorage.setItem("HISTORY_SEARCH", [...historySearchTemp, keyword].toString());
+                } else {
+                    await AsyncStorage.setItem("HISTORY_SEARCH", [keyword].toString());
                 }
-            })
+
+                dispatch({
+                    type: 'SAVE_HISTORY_SEARCH',
+                    payload: {
+                        keyword
+                    }
+                })
+            }
 
             return {
                 status: true,
-                data: data
-            }
+                data: data,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
 };
 
-let accessToken = null;
-let account = null;
-let historySearch = [];
-async function fetchDataFromStorage() {
-    accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-
-    if (accessToken) {
-        const accountToken = await AsyncStorage.getItem('ACCOUNT_TOKEN');
-        if (accountToken) {
-            account = JSON.parse(accountToken);
-        }
-    }
-}
-fetchDataFromStorage();
-
 const initialState = {
     accessToken,
     account,
-    historySearch
+    historySearch,
 };
 
 export default (state = initialState, action) => {
@@ -275,15 +317,24 @@ export default (state = initialState, action) => {
             accessToken: null,
             account: null,
         };
-    } else if (action.type === 'SEARCH_SUCCESS') {
+    } else if (action.type === "SEARCH_SUCCESS") {
         return {
             ...state,
-            searchCourses: action.payload.courses
-        }
-    } else if (action.type === 'SEARCH_FAILED') {
+            searchCourses: action.payload.courses,
+        };
+    } else if (action.type === "SEARCH_FAILED") {
         return {
             ...state,
-            searchCourses: []
+            searchCourses: [],
+        };
+    } else if (action.type === "SAVE_HISTORY_SEARCH") {
+        const nextID = state.historySearch.length;
+        return {
+            ...state,
+            historySearch: [...state.historySearch, {
+                id: nextID,
+                name: action.payload.keyword
+            }]
         }
     }
     return state;

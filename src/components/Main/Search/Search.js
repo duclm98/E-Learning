@@ -6,45 +6,17 @@ import ListCoursesItem from "../../Courses/ListCoursesItem/ListCoursesItem";
 
 import { courseAcction } from "../../../redux";
 
-const Search = ({ navigation, route, dispatch }) => {
+const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
   const [courses, setCourses] = useState([]);
   const [selectedItems, setSelectedItems] = useState();
   const [keyword, setKeyword] = useState("");
+  const [items, setItems] = useState(historySearchFromState);
+  const [page, setPage] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  var items = [
-    {
-      id: 1,
-      name: "JavaScript",
-    },
-    {
-      id: 2,
-      name: "Java",
-    },
-    {
-      id: 3,
-      name: "Ruby",
-    },
-    {
-      id: 4,
-      name: "React Native",
-    },
-    {
-      id: 5,
-      name: "PHP",
-    },
-    {
-      id: 6,
-      name: "Python",
-    },
-    {
-      id: 7,
-      name: "Go",
-    },
-    {
-      id: 8,
-      name: "Swift",
-    },
-  ];
+  useEffect(() => {
+    setItems(historySearchFromState);
+  }, [historySearchFromState]);
 
   useEffect(() => {
     if (selectedItems) {
@@ -58,8 +30,29 @@ const Search = ({ navigation, route, dispatch }) => {
     );
     if (courses.status) {
       setCourses(courses.data);
+      setKeyword("");
     }
   };
+
+  // Phân trang
+  // 1 page chứa 5 items
+
+  const handlePrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < Math.ceil(courses.length / 5)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  useEffect(() => {
+    const tempData = courses.slice(currentPage * 5 - 5, currentPage * 5);
+    setPage(tempData);
+  }, [courses, currentPage]);
 
   const renderSearchView = () => {
     return (
@@ -106,6 +99,19 @@ const Search = ({ navigation, route, dispatch }) => {
         <View style={{ padding: 5 }}>
           <Button title="Tìm kiếm" onPress={handelSearch}></Button>
         </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            paddingLeft: 50,
+            paddingRight: 50,
+          }}
+        >
+          <Button title="<-- Prev" onPress={handlePrev}></Button>
+          <Button title={currentPage.toString()}></Button>
+          <Button title="Next -->" onPress={handleNext}></Button>
+        </View>
       </View>
     );
   };
@@ -113,7 +119,7 @@ const Search = ({ navigation, route, dispatch }) => {
   const renderFound = () => {
     return (
       <FlatList
-        data={courses}
+        data={page}
         renderItem={({ item }) => (
           <ListCoursesItem
             item={item}
@@ -129,7 +135,6 @@ const Search = ({ navigation, route, dispatch }) => {
       <View
         style={{
           display: "flex",
-          flex: 1,
           flexDirection: "column",
           justifyContent: "space-between",
           alignItems: "center",
@@ -147,7 +152,7 @@ const Search = ({ navigation, route, dispatch }) => {
   };
 
   return (
-    <View>
+    <View style={{ display: "flex", flex: 1, backgroundColor: "#C6E2FF" }}>
       {renderSearchView()}
       {courses.length !== 0 ? renderFound() : renderNotFound()}
     </View>
@@ -157,7 +162,9 @@ const Search = ({ navigation, route, dispatch }) => {
 const styles = StyleSheet.create({});
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    historySearchFromState: state.historySearch,
+  };
 };
 
 export default connect(mapStateToProps)(Search);

@@ -12,16 +12,17 @@ import {
 } from "react-native";
 import ImageButton from "../../Common/ImageButton";
 import instance from "../../../services/AxiosServices";
+import LessonList from "../LessonList/LessonList";
 
 const CourseDetail = ({ navigation, route, dispatch }) => {
-  const [id, setID] = useState(route.params.id);
   const [course, setCourse] = useState();
 
   useEffect(() => {
-    if (id) {
+    if (route.params.id) {
+      const id = route.params.id;
       const getCourse = async (id) => {
         try {
-          const course = await instance.get(`course/get-course-info?id=${id}`);
+          const course = await instance.get(`course/get-course-detail/${id}/null`);
           try {
             const instructor = await instance.get(
               `instructor/detail/${course.data.payload.instructorId}`
@@ -38,9 +39,8 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
         } catch (error) {}
       };
       getCourse(id);
-      setID(null);
     }
-  }, [id]);
+  }, [route.params.id]);
 
   const HandleAddToWishlist = () => {
     setWishlist([...wishlist, course]);
@@ -56,7 +56,7 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
   };
 
   return (
-    <View style={{ backgroundColor: "#C6E2FF" }}>
+    <View style={{ backgroundColor: "#C6E2FF", display:'flex', flex: 1 }}>
       {course ? (
         <ScrollView>
           <Image
@@ -83,22 +83,25 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
                 style={styles.button}
                 onPress={HandleAddToWishlist}
               >
-                <Text style={styles.textInButton}>Add to Wishlist</Text>
+                <Text style={styles.textInButton}>Yêu thích</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
-                <Text style={styles.textInButton}>Download</Text>
+                <Text style={styles.textInButton}>Đăng kí miễn phí</Text>
               </TouchableOpacity>
             </View>
             <Text></Text>
             <View>
-              <Text style={styles.title}>Requirements</Text>
+              <Text style={styles.title}>Yêu cầu</Text>
               {renderRequirement(course.requirement)}
               <Text></Text>
-              <Text style={styles.title}>Description</Text>
+              <Text style={styles.title}>Mô tả</Text>
               <Text style={styles.text}>{course.description}</Text>
               <Text></Text>
-              <Text style={styles.title}>Learn what?</Text>
+              <Text style={styles.title}>Học những gì?</Text>
               {renderLearnWhat(course.learnWhat)}
+              <Text></Text>
+              <Text style={styles.title}>Danh sách bài học</Text>
+              <LessonList data={course.section}></LessonList>
             </View>
           </View>
         </ScrollView>

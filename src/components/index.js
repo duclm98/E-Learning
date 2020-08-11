@@ -16,7 +16,7 @@ import VerifyPassword from "./Authentication/ForgetPassword/VerifyPassword";
 import Home from "./Main/Home/Home";
 import Search from "./Main/Search/Search";
 import MyCourses from "./Main/MyCourses/MyCourses";
-import Wishlist from "./Main/Wishlist/Wishlist";
+import Favorite from "./Main/Favorite/Favorite";
 import Account from "./Main/Account/Account";
 import ListCourses from "./Courses/ListCourses/ListCourses";
 import CourseDetail from "./Courses/CourseDetail/CourseDetail";
@@ -133,15 +133,15 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
     );
   };
 
-  const WishlistStack = (props) => {
+  const FavoriteStack = (props) => {
     const headerRightButton = props.route.params.headerRightButton;
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name="Wishlist"
-          component={Wishlist}
+          name="Favorite"
+          component={Favorite}
           options={{
-            title: "Wishlist",
+            title: "Favorites",
             ...stackOptions,
             headerRight: () => headerRightButton,
           }}
@@ -224,7 +224,7 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
               iconName = focused ? "md-search" : "ios-search";
             } else if (route.name === "MyCoursesStack") {
               iconName = focused ? "md-list" : "ios-list";
-            } else if (route.name === "WishlistStack") {
+            } else if (route.name === "FavoriteStack") {
               iconName = focused ? "md-heart" : "ios-heart";
             } else if (route.name === "AccountStack") {
               iconName = focused ? "md-person" : "ios-person";
@@ -265,10 +265,10 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
           options={{ title: "My courses" }}
         ></Tab.Screen>
         <Tab.Screen
-          name="WishlistStack"
-          component={WishlistStack}
+          name="FavoriteStack"
+          component={FavoriteStack}
           initialParams={{ headerRightButton }}
-          options={{ title: "Wishlist" }}
+          options={{ title: "Favorites" }}
         ></Tab.Screen>
         <Tab.Screen
           name="AccountStack"

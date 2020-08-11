@@ -40,7 +40,7 @@ const ListCourses = ({ navigation, route, dispatch }) => {
   },[type]);
 
   return (
-    <View>
+    <View style={{backgroundColor:'#C6E2FF'}}>
       <FlatList
         data={data}
         renderItem={({ item }) => (

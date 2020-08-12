@@ -1,15 +1,48 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import ListCourses from '../../Courses/ListCourses/ListCourses'
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { View, FlatList } from "react-native";
+import ListCoursesItem from "../../Courses/ListCoursesItem/ListCoursesItem";
 
-const MyCourses = () => {
-    return (
-        <View>
-            <ListCourses></ListCourses>
-        </View>
-    )
-}
+import { courseAcction } from '../../../redux';
 
-const styles = StyleSheet.create({})
+const MyCourses = ({ navigation, dispatch, myCoursesFromState }) => {
+  const [data, setData] = useState([]);
 
-export default MyCourses
+  useEffect(() => {
+    if (myCoursesFromState.isChange) {
+      dispatch(courseAcction.getMyCourses());
+    }
+  }, [myCoursesFromState.isChange]);
+
+  useEffect(() => {
+    setData(myCoursesFromState.data);
+  }, [myCoursesFromState]);
+
+  return (
+    <View
+      style={{
+        display: "flex",
+        flex: 1,
+        backgroundColor: "#C6E2FF",
+      }}
+    >
+      <FlatList
+        data={data}
+        renderItem={({ item }) => (
+          <ListCoursesItem
+            item={item}
+            navigation={navigation}
+          ></ListCoursesItem>
+        )}
+      ></FlatList>
+    </View>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    myCoursesFromState: state.myCourses,
+  };
+};
+
+export default connect(mapStateToProps)(MyCourses);

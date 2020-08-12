@@ -16,28 +16,41 @@ function SectionCourses({
   dispatch,
   title,
   type,
+  myCoursesFromState,
 }) {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    const getCourses = async () =>{
+    if (myCoursesFromState.isChange) {
+      dispatch(courseAcction.getMyCourses());
+    }
+  }, [myCoursesFromState.isChange]);
+
+  useEffect(() => {
+    if (type === "4") {
+      setCourses(myCoursesFromState.data);
+    }
+  }, [myCoursesFromState.data, type]);
+
+  useEffect(() => {
+    const getCourses = async () => {
       if (type === "1") {
         const data = await dispatch(courseAcction.getNewCourses(5, 1));
-        if(data.status){
+        if (data.status) {
           setCourses(data.data);
         }
       } else if (type === "2") {
         const data = await dispatch(courseAcction.getRateCourses(5, 1));
-        if(data.status){
+        if (data.status) {
           setCourses(data.data);
         }
       } else if (type === "3") {
         const data = await dispatch(courseAcction.getRecommendCourses(5, 1));
-        if(data.status){
+        if (data.status) {
           setCourses(data.data);
         }
       }
-    }
+    };
     getCourses();
   }, [type]);
 
@@ -55,7 +68,12 @@ function SectionCourses({
   };
 
   const HandleSeeAllButton = () => {
-    navigation.navigate("ListCourses", {
+    if (type === "4") {
+      return navigation.navigate("MyCoursesStack", {
+        navigation: navigation,
+      });
+    }
+    return navigation.navigate("ListCourses", {
       title: title,
       type: type,
       navigation: navigation,
@@ -101,6 +119,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
+    myCoursesFromState: state.myCourses,
   };
 };
 

@@ -12,11 +12,11 @@ const Favorite = ({ navigation, dispatch, favoritesFromState }) => {
     if (favoritesFromState.isChange) {
       dispatch(courseAcction.getFavorites());
     }
-  }, [favoritesFromState.isChange]);
+  }, [favoritesFromState]);
 
   useEffect(() => {
     setData(favoritesFromState.data);
-  }, [favoritesFromState.data]);
+  }, [favoritesFromState]);
 
   return (
     <View

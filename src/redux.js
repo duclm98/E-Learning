@@ -341,12 +341,106 @@ export const courseAcction = {
             console.log(error);
         }
     },
-    likeCourse: (courseID) => async dispatch => {
+    likeCourse: (courseID) => async (dispatch) => {
         try {
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
             const like = await instance.post("user/like-course", {
+                courseId: courseID,
+            });
+
+            const course = await instance.get(
+                `course/get-course-info?id=${courseID}`
+            );
+
+            const instructor = await instance.get(
+                `instructor/detail/${course.data.payload.instructorId}`
+            );
+
+            const data = {
+                id: course.data.payload.id,
+                imageUrl: course.data.payload.imageUrl,
+                title: course.data.payload.title,
+                price: course.data.payload.price,
+                released: moment(course.data.payload.updatedAt).format("DD/MM/YYYY"),
+                author: instructor.data.payload.name,
+                totalHours: course.data.payload.totalHours,
+            };
+
+            dispatch({
+                type: "LIKE_COURSE_SUCCESS",
+                payload: {
+                    favorite: data,
+                },
+            });
+
+            return {
+                status: true,
+            };
+        } catch (error) {
+            let msg = "Có lỗi xảy ra, vui lòng thử lại";
+            if (error.response) {
+                msg = error.response.data.message;
+            }
+
+            return {
+                status: false,
+                msg,
+            };
+        }
+    },
+    getMyCourses: () => async (dispatch) => {
+        try {
+            instance.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+            const myCourses = await instance.get("user/get-process-courses");
+
+            const data = await Promise.all(
+                myCourses.data.payload.map(async (i) => {
+                    try {
+                        const course = await instance.get(
+                            `course/get-course-info?id=${i.id}`
+                        );
+                        return {
+                            id: course.data.payload.id,
+                            imageUrl: i.courseImage,
+                            title: i.courseTitle,
+                            price: i.coursePrice,
+                            released: moment(course.data.payload.updatedAt).format(
+                                "DD/MM/YYYY"
+                            ),
+                            author: i.instructorName,
+                            totalHours: course.data.payload.totalHours,
+                        };
+                    } catch (error) {
+                        console.log(error);
+                    }
+                })
+            );
+
+            dispatch({
+                type: "GET_MY_COURSES_SUCCESS",
+                payload: {
+                    myCourses: data,
+                },
+            });
+
+            return {
+                status: true,
+                data: data,
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    freelyRegisterCourse: (courseID) => async (dispatch) => {
+        try {
+            instance.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+            const register = await instance.post("payment/get-free-courses", {
                 courseId: courseID
             });
 
@@ -363,33 +457,31 @@ export const courseAcction = {
                 imageUrl: course.data.payload.imageUrl,
                 title: course.data.payload.title,
                 price: course.data.payload.price,
-                released: moment(course.data.payload.updatedAt).format(
-                    "DD/MM/YYYY"
-                ),
+                released: moment(course.data.payload.updatedAt).format("DD/MM/YYYY"),
                 author: instructor.data.payload.name,
                 totalHours: course.data.payload.totalHours,
-            }
+            };
 
             dispatch({
-                type: "LIKE_COURSE_SUCCESS",
+                type: "FREELY_REGISTER_COURSE_SUCCESS",
                 payload: {
-                    favorite: data,
+                    myCourses: data,
                 },
             });
 
             return {
-                status: true
-            }
+                status: true,
+            };
         } catch (error) {
-            let msg = 'Có lỗi xảy ra, vui lòng thử lại';
+            let msg = "Có lỗi xảy ra, vui lòng thử lại";
             if (error.response) {
-                msg = error.response.data.message;
+                msg = error.response.data.messsage;
             }
 
             return {
                 status: false,
-                msg
-            }
+                msg,
+            };
         }
     },
 };
@@ -399,6 +491,10 @@ const initialState = {
     account,
     historySearch,
     favorites: {
+        data: [],
+        isChange: true,
+    },
+    myCourses: {
         data: [],
         isChange: true,
     },
@@ -451,8 +547,23 @@ export default (state = initialState, action) => {
         return {
             ...state,
             favorites: {
-                data: [...state.favorites.data, action.payload.favorite],
+                data: [],
                 isChange: true,
+            },
+        };
+    } else if (action.type === "GET_MY_COURSES_SUCCESS") {
+        return {
+            ...state,
+            myCourses: {
+                data: action.payload.myCourses,
+                isChange: false,
+            },
+        };
+    } else if (action.type === "FREELY_REGISTER_COURSE_SUCCESS") {
+        return {
+            ...state,
+            myCourses: {
+                data: [...state.myCourses.data, action.payload.myCourses]
             },
         };
     }

@@ -17,9 +17,16 @@ import LessonList from "../LessonList/LessonList";
 
 import { courseAcction } from "../../../redux";
 
-const CourseDetail = ({ navigation, route, dispatch, favoritesFromState }) => {
+const CourseDetail = ({
+  navigation,
+  route,
+  dispatch,
+  favoritesFromState,
+  myCoursesFromState,
+}) => {
   const [course, setCourse] = useState();
   const [isLike, setIsLike] = useState(false);
+  const [isRegisterCourse, setIsRegisterCourse] = useState(false);
 
   useEffect(() => {
     let liked = false;
@@ -30,7 +37,18 @@ const CourseDetail = ({ navigation, route, dispatch, favoritesFromState }) => {
       }
     }
     setIsLike(liked);
-  }, [favoritesFromState.data, route.params.id]);
+  }, [favoritesFromState, route.params.id]);
+
+  useEffect(() => {
+    let registered = false;
+    for (let i = 0; i < myCoursesFromState.data.length; i++) {
+      if (myCoursesFromState.data[i].id === route.params.id) {
+        registered = true;
+        break;
+      }
+    }
+    setIsRegisterCourse(registered);
+  }, [myCoursesFromState, route.params.id]);
 
   useEffect(() => {
     if (route.params.id) {
@@ -71,6 +89,19 @@ const CourseDetail = ({ navigation, route, dispatch, favoritesFromState }) => {
       "Thành công",
       "Thêm vào danh sách yêu thích thành công."
     );
+  };
+
+  const HandleFreelyRegisterCourse = async (courseID) => {
+    if (isRegisterCourse) {
+      return Alert.alert("Cảnh báo", "Bạn đã đăng kí khóa học này.");
+    }
+    const freelyRegisterCourse = await dispatch(
+      courseAcction.freelyRegisterCourse(courseID)
+    );
+    if (!freelyRegisterCourse.status) {
+      return Alert.alert("Lỗi", freelyRegisterCourse.msg);
+    }
+    return Alert.alert("Thành công", "Đăng kí khóa học thành công.");
   };
 
   const renderRequirement = (requirements) => {
@@ -117,8 +148,17 @@ const CourseDetail = ({ navigation, route, dispatch, favoritesFromState }) => {
                   <Text style={styles.textInButton}>Yêu thích</Text>
                 )}
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.textInButton}>Đăng kí miễn phí</Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  HandleFreelyRegisterCourse(course.id);
+                }}
+              >
+                {isRegisterCourse ? (
+                  <Text style={styles.textInButton}>Đã đăng kí</Text>
+                ) : (
+                  <Text style={styles.textInButton}>Đăng kí miễn phí</Text>
+                )}
               </TouchableOpacity>
             </View>
             <Text></Text>
@@ -176,6 +216,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return {
     favoritesFromState: state.favorites,
+    myCoursesFromState: state.myCourses,
   };
 };
 

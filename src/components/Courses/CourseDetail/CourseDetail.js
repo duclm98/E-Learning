@@ -9,20 +9,37 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import ImageButton from "../../Common/ImageButton";
 import instance from "../../../services/AxiosServices";
 import LessonList from "../LessonList/LessonList";
 
-const CourseDetail = ({ navigation, route, dispatch }) => {
+import { courseAcction } from "../../../redux";
+
+const CourseDetail = ({ navigation, route, dispatch, favoritesFromState }) => {
   const [course, setCourse] = useState();
+  const [isLike, setIsLike] = useState(false);
+
+  useEffect(() => {
+    let liked = false;
+    for (let i = 0; i < favoritesFromState.data.length; i++) {
+      if (favoritesFromState.data[i].id === route.params.id) {
+        liked = true;
+        break;
+      }
+    }
+    setIsLike(liked);
+  }, [favoritesFromState.data, route.params.id]);
 
   useEffect(() => {
     if (route.params.id) {
       const id = route.params.id;
       const getCourse = async (id) => {
         try {
-          const course = await instance.get(`course/get-course-detail/${id}/null`);
+          const course = await instance.get(
+            `course/get-course-detail/${id}/null`
+          );
           try {
             const instructor = await instance.get(
               `instructor/detail/${course.data.payload.instructorId}`
@@ -42,9 +59,18 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
     }
   }, [route.params.id]);
 
-  const HandleAddToWishlist = () => {
-    setWishlist([...wishlist, course]);
-    navigation.canGoBack();
+  const HandleLikeCourse = async (courseID) => {
+    const likeCourse = await dispatch(courseAcction.likeCourse(courseID));
+    if (!likeCourse.status) {
+      return Alert.alert("Lỗi", likeCourse.msg);
+    }
+    if (isLike) {
+      return Alert.alert("Thành công", "Bỏ thích khóa học thành công.");
+    }
+    return Alert.alert(
+      "Thành công",
+      "Thêm vào danh sách yêu thích thành công."
+    );
   };
 
   const renderRequirement = (requirements) => {
@@ -56,7 +82,7 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
   };
 
   return (
-    <View style={{ backgroundColor: "#C6E2FF", display:'flex', flex: 1 }}>
+    <View style={{ backgroundColor: "#C6E2FF", display: "flex", flex: 1 }}>
       {course ? (
         <ScrollView>
           <Image
@@ -75,15 +101,21 @@ const CourseDetail = ({ navigation, route, dispatch }) => {
               <Text style={{ fontSize: 15, fontWeight: "bold" }}>
                 {course.released} - {course.totalHours}
               </Text>
-              <Text style={{ fontSize: 15, fontWeight: "bold" }}>Giá: {course.price} VNĐ</Text>
+              <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                Giá: {course.price} VNĐ
+              </Text>
             </View>
             <Text></Text>
             <View style={styles.buttonArea}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={HandleAddToWishlist}
+                onPress={() => HandleLikeCourse(course.id)}
               >
-                <Text style={styles.textInButton}>Yêu thích</Text>
+                {isLike ? (
+                  <Text style={styles.textInButton}>Bỏ thích</Text>
+                ) : (
+                  <Text style={styles.textInButton}>Yêu thích</Text>
+                )}
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.textInButton}>Đăng kí miễn phí</Text>
@@ -141,4 +173,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect()(CourseDetail);
+const mapStateToProps = (state) => {
+  return {
+    favoritesFromState: state.favorites,
+  };
+};
+
+export default connect(mapStateToProps)(CourseDetail);

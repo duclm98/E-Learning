@@ -1,15 +1,48 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import ListCourses from '../../Courses/ListCourses/ListCourses'
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { View, FlatList } from "react-native";
+import ListCoursesItem from "../../Courses/ListCoursesItem/ListCoursesItem";
 
-const Favorite = () => {
+import { courseAcction } from "../../../redux";
 
-    return (
-        <View>
-        </View>
-    )
-}
+const Favorite = ({ navigation, dispatch, favoritesFromState }) => {
+  const [data, setData] = useState([]);
 
-const styles = StyleSheet.create({})
+  useEffect(() => {
+    if (favoritesFromState.isChange) {
+      dispatch(courseAcction.getFavorites());
+    }
+  }, [favoritesFromState.isChange]);
 
-export default Favorite
+  useEffect(() => {
+    setData(favoritesFromState.data);
+  }, [favoritesFromState.data]);
+
+  return (
+    <View
+      style={{
+        display: "flex",
+        flex: 1,
+        backgroundColor: "#C6E2FF",
+      }}
+    >
+      <FlatList
+        data={data}
+        renderItem={({ item }) => (
+          <ListCoursesItem
+            item={item}
+            navigation={navigation}
+          ></ListCoursesItem>
+        )}
+      ></FlatList>
+    </View>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    favoritesFromState: state.favorites,
+  };
+};
+
+export default connect(mapStateToProps)(Favorite);

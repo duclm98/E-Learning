@@ -2,12 +2,8 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import {
   StyleSheet,
-  Text,
   View,
   FlatList,
-  SectionList,
-  Button,
-  TextInput,
 } from "react-native";
 import ListCoursesItem from "../ListCoursesItem/ListCoursesItem";
 

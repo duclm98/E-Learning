@@ -23,9 +23,9 @@ async function fetchDataFromStorage() {
             historySearch = historySearchTemp.map((item, index) => {
                 return {
                     id: index,
-                    name: item
-                }
-            })
+                    name: item,
+                };
+            });
         }
     }
 }
@@ -247,7 +247,7 @@ export const courseAcction = {
             };
         }
     },
-    searchCourses: (keyword, limit, offset) => async dispatch => {
+    searchCourses: (keyword, limit, offset) => async (dispatch) => {
         try {
             const courses = await instance.post("course/search", {
                 keyword: keyword,
@@ -270,20 +270,25 @@ export const courseAcction = {
             });
 
             if (keyword !== "") {
-                let historySearchTempToken = await AsyncStorage.getItem("HISTORY_SEARCH");
+                let historySearchTempToken = await AsyncStorage.getItem(
+                    "HISTORY_SEARCH"
+                );
                 if (historySearchTempToken) {
-                    const historySearchTemp = historySearchTempToken.split(',');
-                    await AsyncStorage.setItem("HISTORY_SEARCH", [...historySearchTemp, keyword].toString());
+                    const historySearchTemp = historySearchTempToken.split(",");
+                    await AsyncStorage.setItem(
+                        "HISTORY_SEARCH",
+                        [...historySearchTemp, keyword].toString()
+                    );
                 } else {
                     await AsyncStorage.setItem("HISTORY_SEARCH", [keyword].toString());
                 }
 
                 dispatch({
-                    type: 'SAVE_HISTORY_SEARCH',
+                    type: "SAVE_HISTORY_SEARCH",
                     payload: {
-                        keyword
-                    }
-                })
+                        keyword,
+                    },
+                });
             }
 
             return {
@@ -296,12 +301,107 @@ export const courseAcction = {
             };
         }
     },
+    getFavorites: () => async (dispatch) => {
+        try {
+            instance.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+            const coursesList = await instance.get("user/get-favorite-courses");
+
+            const data = await Promise.all(
+                coursesList.data.payload.map(async (i) => {
+                    try {
+                        const course = await instance.get(
+                            `course/get-course-info?id=${i.id}`
+                        );
+                        return {
+                            id: course.data.payload.id,
+                            imageUrl: i.courseImage,
+                            title: i.courseTitle,
+                            price: i.coursePrice,
+                            released: moment(course.data.payload.updatedAt).format(
+                                "DD/MM/YYYY"
+                            ),
+                            author: i.instructorName,
+                            totalHours: course.data.payload.totalHours,
+                        };
+                    } catch (error) {
+                        console.log(error);
+                    }
+                })
+            );
+
+            return dispatch({
+                type: "GET_FAVORITES_SUCCESS",
+                payload: {
+                    favorites: data,
+                },
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    likeCourse: (courseID) => async dispatch => {
+        try {
+            instance.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+            const like = await instance.post("user/like-course", {
+                courseId: courseID
+            });
+
+            const course = await instance.get(
+                `course/get-course-info?id=${courseID}`
+            );
+
+            const instructor = await instance.get(
+                `instructor/detail/${course.data.payload.instructorId}`
+            );
+
+            const data = {
+                id: course.data.payload.id,
+                imageUrl: course.data.payload.imageUrl,
+                title: course.data.payload.title,
+                price: course.data.payload.price,
+                released: moment(course.data.payload.updatedAt).format(
+                    "DD/MM/YYYY"
+                ),
+                author: instructor.data.payload.name,
+                totalHours: course.data.payload.totalHours,
+            }
+
+            dispatch({
+                type: "LIKE_COURSE_SUCCESS",
+                payload: {
+                    favorite: data,
+                },
+            });
+
+            return {
+                status: true
+            }
+        } catch (error) {
+            let msg = 'Có lỗi xảy ra, vui lòng thử lại';
+            if (error.response) {
+                msg = error.response.data.message;
+            }
+
+            return {
+                status: false,
+                msg
+            }
+        }
+    },
 };
 
 const initialState = {
     accessToken,
     account,
     historySearch,
+    favorites: {
+        data: [],
+        isChange: true,
+    },
 };
 
 export default (state = initialState, action) => {
@@ -331,11 +431,30 @@ export default (state = initialState, action) => {
         const nextID = state.historySearch.length;
         return {
             ...state,
-            historySearch: [...state.historySearch, {
-                id: nextID,
-                name: action.payload.keyword
-            }]
-        }
+            historySearch: [
+                ...state.historySearch,
+                {
+                    id: nextID,
+                    name: action.payload.keyword,
+                },
+            ],
+        };
+    } else if (action.type === "GET_FAVORITES_SUCCESS") {
+        return {
+            ...state,
+            favorites: {
+                data: action.payload.favorites,
+                isChange: false,
+            },
+        };
+    } else if (action.type === "LIKE_COURSE_SUCCESS") {
+        return {
+            ...state,
+            favorites: {
+                data: [...state.favorites.data, action.payload.favorite],
+                isChange: true,
+            },
+        };
     }
     return state;
 };

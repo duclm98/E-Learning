@@ -16,6 +16,7 @@
     "@react-navigation/stack": "^5.3.9",
     "axios": "^0.19.2",
     "expo": "~37.0.3",
+    "expo-av": "^8.4.0",
     "moment": "^2.27.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

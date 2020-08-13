@@ -11,9 +11,10 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import ImageButton from "../../Common/ImageButton";
 import instance from "../../../services/AxiosServices";
-import LessonList from "../LessonList/LessonList";
+import LessonList from "./LessonList";
+
+import * as LocalStorageServices from "../../../services/LocalStorageServices";
 
 import { courseAcction } from "../../../redux";
 
@@ -29,6 +30,7 @@ const CourseDetail = ({
   const [isLike, setIsLike] = useState(false);
   const [isRegisterCourse, setIsRegisterCourse] = useState(false);
 
+  // Kiểm tra xem đã like khóa học chưa
   useEffect(() => {
     let liked = false;
     for (let i = 0; i < favoritesFromState.data.length; i++) {
@@ -40,6 +42,7 @@ const CourseDetail = ({
     setIsLike(liked);
   }, [favoritesFromState, route.params.id]);
 
+  // Kiểm tra đã đăng kí khóa học chưa
   useEffect(() => {
     let registered = false;
     for (let i = 0; i < myCoursesFromState.data.length; i++) {
@@ -51,15 +54,14 @@ const CourseDetail = ({
     setIsRegisterCourse(registered);
   }, [myCoursesFromState, route.params.id]);
 
-  // console.log(accountFromState)
-
   useEffect(() => {
     if (route.params.id) {
       const id = route.params.id;
       const getCourse = async (id) => {
+        const account = await LocalStorageServices.getAccount();
         try {
           const course = await instance.get(
-            `course/get-course-detail/${id}/null`
+            `course/get-course-detail/${id}/${account.id}`
           );
           try {
             const instructor = await instance.get(
@@ -105,6 +107,12 @@ const CourseDetail = ({
       return Alert.alert("Lỗi", freelyRegisterCourse.msg);
     }
     return Alert.alert("Thành công", "Đăng kí khóa học thành công.");
+  };
+
+  const HandleLearnNow = (courseID) => {
+    navigation.navigate("Learn", {
+      id: courseID,
+    });
   };
 
   const renderRequirement = (requirements) => {
@@ -169,14 +177,35 @@ const CourseDetail = ({
               <Text style={styles.title}>Yêu cầu</Text>
               {renderRequirement(course.requirement)}
               <Text></Text>
+
               <Text style={styles.title}>Mô tả</Text>
               <Text style={styles.text}>{course.description}</Text>
               <Text></Text>
+
               <Text style={styles.title}>Học những gì?</Text>
               {renderLearnWhat(course.learnWhat)}
               <Text></Text>
+
               <Text style={styles.title}>Danh sách bài học</Text>
               <LessonList data={course.section}></LessonList>
+              <Text></Text>
+
+              {isRegisterCourse ? (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                      HandleLearnNow(course.id);
+                    }}
+                  >
+                    <Text style={styles.textInButton}>Vào học ngay</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+              <Text></Text>
+
             </View>
           </View>
         </ScrollView>

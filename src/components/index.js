@@ -20,6 +20,7 @@ import Favorite from "./Main/Favorite/Favorite";
 import Account from "./Main/Account/Account";
 import ListCourses from "./Courses/ListCourses/ListCourses";
 import CourseDetail from "./Courses/CourseDetail/CourseDetail";
+import Learn from './Courses/Learn/Learn';
 
 import * as LocalStorageServices from "../services/LocalStorageServices";
 
@@ -120,6 +121,16 @@ const MainComponent = ({
         <Stack.Screen
           name="CourseDetail"
           component={CourseDetail}
+          options={{
+            title: title,
+            ...stackOptions,
+            headerRight: () => headerRightButton,
+            headerShown: false,
+          }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="Learn"
+          component={Learn}
           options={{
             title: title,
             ...stackOptions,

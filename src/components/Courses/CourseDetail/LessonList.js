@@ -15,7 +15,7 @@ const LessonList = ({ navigation, data }) => {
   };
 
   const renderLessonList = (data) => {
-    return data.map((value, index) => (
+    return data.map((value) => (
       <View style={styles.container}>
         <View
           style={{
@@ -23,7 +23,7 @@ const LessonList = ({ navigation, data }) => {
             paddingRight: 68,
           }}
         >
-          <Text style={styles.title1}>Bài {index + 1}: </Text>
+          <Text style={styles.title1}>Bài {value.numberOrder}: </Text>
           <Text style={styles.title1}>{value.name}</Text>
         </View>
         <Text style={{ ...styles.title1, width: 58 }}>
@@ -34,7 +34,7 @@ const LessonList = ({ navigation, data }) => {
   };
 
   const renderSectionList = (data) => {
-    return data.map((value, index) => (
+    return data.map((value) => (
       <View>
         <View style={styles.container}>
           <View
@@ -43,7 +43,7 @@ const LessonList = ({ navigation, data }) => {
               paddingRight: 110,
             }}
           >
-            <Text style={styles.title}>Phần {index + 1}: </Text>
+            <Text style={styles.title}>Phần {value.numberOrder}: </Text>
             <Text style={styles.title}>{value.name}</Text>
           </View>
           <View

@@ -10,7 +10,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  AsyncStorage,
 } from "react-native";
 import ImageButton from "../../Common/ImageButton";
 import instance from "../../../services/AxiosServices";

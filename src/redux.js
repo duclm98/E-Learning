@@ -1,40 +1,19 @@
-import Storage from 'react-native-storage';
-import AsyncStorage from '@react-native-community/async-storage';
+import Storage from "react-native-storage";
+import AsyncStorage from "@react-native-community/async-storage";
 import moment from "moment";
 import instance from "./services/AxiosServices";
-import * as method from "./methods";
-
-const storage = new Storage({
-    // maximum capacity, default 1000
-    size: 1000,
-
-    // Use AsyncStorage for RN apps, or window.localStorage for web apps.
-    // If storageBackend is not set, data will be lost after reload.
-    storageBackend: AsyncStorage, // for web: window.localStorage
-
-    // expire time, default: 30 day (1000 * 3600 * 24 milliseconds).
-    // can be null, which means never expire.
-    defaultExpires: 1000 * 3600 * 24 * 30,
-
-    // cache data in the memory. default is true.
-    enableCache: true,
-
-    // if data was not found in storage or expired data was found,
-    // the corresponding sync method will be invoked returning
-    // the latest data.
-    sync: {
-        // we'll talk about the details later.
-    }
-});
-// I suggest you have one (and only one) storage instance in global scope.
-
-// for web
-// window.storage = storage;
-
-// for react native
-global.storage = storage;
+import * as LocalStorageServices from "./services/LocalStorageServices";
 
 export const accountAction = {
+    loggedIn: (accessToken, account) => async dispatch => {
+        dispatch({
+            type: "LOGGED_IN",
+            payload: {
+                accessToken,
+                account
+            }
+        })
+    },
     login: (account) => async (dispatch) => {
         const email = account.email.toLowerCase();
         try {
@@ -45,20 +24,21 @@ export const accountAction = {
                 password: account.password,
             });
 
-            const accessToken = data.token;
-
-            await storage.save({
-                key: 'USER',
-                data: {
-                    account: data.userInfo,
-                    accessToken: data.token,
-                },
-            });
+            const saveAccountToLocalStorage = await LocalStorageServices.setAccountAndAccessToken(
+                data.token,
+                data.userInfo
+            );
+            if (!saveAccountToLocalStorage) {
+                return {
+                    status: false,
+                    msg: "Có lỗi xảy ra, vui lòng thử lại.",
+                };
+            }
 
             dispatch({
                 type: "LOGIN_SUCCESS",
                 payload: {
-                    accessToken,
+                    accessToken: data.token,
                     account: data.userInfo,
                 },
             });
@@ -79,12 +59,42 @@ export const accountAction = {
         }
     },
     logout: () => async (dispatch) => {
-        await AsyncStorage.removeItem("ACCESS_TOKEN");
-        await AsyncStorage.removeItem("ACCOUNT_TOKEN");
+        const deleteAccountAndAccessToken = await LocalStorageServices.deleteAccountAndAccessToken();
+        if (!deleteAccountAndAccessToken) {
+            return {
+                status: false,
+                msg: 'Có lỗi xảy ra, vui lòng thử lại.'
+            };
+        }
 
-        return dispatch({
+        dispatch({
             type: "LOGOUT_SUCCESS",
         });
+
+        return {
+            status: true
+        }
+    },
+    getAccount: () => async dispatch => {
+        const accessToken = await LocalStorageServices.getAccessToken();
+        instance.defaults.headers.common[
+            "Authorization"
+        ] = `Bearer ${accessToken}`;
+
+        try {
+            const {
+                data
+            } = await instance.get("user/me");
+
+            return {
+                status: true,
+                data: data.payload
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
     },
     createAccount: (email, password, phone) => async (_) => {
         try {
@@ -160,7 +170,7 @@ export const categoryAcction = {
 export const courseAcction = {
     getRecommendCourses: (limit, offset) => async (_) => {
         try {
-            const account = await method.getAccountInfo();
+            const account = await LocalStorageServices.getAccount();
             const courses = await instance.get(
                 `user/recommend-course/${account.id}/${limit}/${offset}`
             );
@@ -310,14 +320,11 @@ export const courseAcction = {
     },
     getFavorites: () => async (dispatch) => {
         try {
-            const localData = await storage.load({
-                key: 'USER'
-            });
-            accessToken = localData.accessToken;
-
+            const accessToken = await LocalStorageServices.getAccessToken();
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
+
             const coursesList = await instance.get("user/get-favorite-courses");
 
             const data = await Promise.all(
@@ -355,14 +362,11 @@ export const courseAcction = {
     },
     likeCourse: (courseID) => async (dispatch) => {
         try {
-            const localData = await storage.load({
-                key: 'USER'
-            });
-            accessToken = localData.accessToken;
-
+            const accessToken = await LocalStorageServices.getAccessToken();
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
+
             const like = await instance.post("user/like-course", {
                 courseId: courseID,
             });
@@ -409,14 +413,11 @@ export const courseAcction = {
     },
     getMyCourses: () => async (dispatch) => {
         try {
-            const localData = await storage.load({
-                key: 'USER'
-            });
-            accessToken = localData.accessToken;
-
+            const accessToken = await LocalStorageServices.getAccessToken();
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
+
             const myCourses = await instance.get("user/get-process-courses");
 
             const data = await Promise.all(
@@ -459,14 +460,11 @@ export const courseAcction = {
     },
     freelyRegisterCourse: (courseID) => async (dispatch) => {
         try {
-            const localData = await storage.load({
-                key: 'USER'
-            });
-            accessToken = localData.accessToken;
-
+            const accessToken = await LocalStorageServices.getAccessToken();
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
+
             const register = await instance.post("payment/get-free-courses", {
                 courseId: courseID,
             });
@@ -517,39 +515,6 @@ let accessToken = null;
 let account = null;
 let historySearch = [];
 
-const fetchDataFromStorage = async () => {
-    // accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-
-    // if (accessToken) {
-    //     const accountToken = await AsyncStorage.getItem("ACCOUNT_TOKEN");
-    //     if (accountToken) {
-    //         account = JSON.parse(accountToken);
-    //     }
-
-    //     const historySearchToken = await AsyncStorage.getItem("HISTORY_SEARCH");
-    //     if (historySearchToken) {
-    //         const historySearchTemp = historySearchToken.split(",");
-    //         historySearch = historySearchTemp.map((item, index) => {
-    //             return {
-    //                 id: index,
-    //                 name: item,
-    //             };
-    //         });
-    //     }
-    // }
-
-    try {
-        const localData = await storage.load({
-            key: 'USER'
-        });
-        accessToken = localData.accessToken;
-        account = localData.account;
-    } catch (error) {
-        console.log(error)
-    }
-};
-fetchDataFromStorage()
-
 const initialState = {
     accessToken,
     account,
@@ -562,11 +527,16 @@ const initialState = {
         data: [],
         isChange: true,
     },
-
 };
 
 export default (state = initialState, action) => {
-    if (action.type === "LOGIN_SUCCESS") {
+    if (action.type === "LOGGED_IN") {
+        return {
+            ...state,
+            accessToken: action.payload.accessToken,
+            account: action.payload.account,
+        }
+    } else if (action.type === "LOGIN_SUCCESS") {
         return {
             ...state,
             accessToken: action.payload.accessToken,
@@ -574,9 +544,7 @@ export default (state = initialState, action) => {
         };
     } else if (action.type === "LOGOUT_SUCCESS") {
         return {
-            ...state,
-            accessToken: null,
-            account: null,
+            ...initialState
         };
     } else if (action.type === "SEARCH_SUCCESS") {
         return {

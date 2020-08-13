@@ -21,9 +21,41 @@ import Account from "./Main/Account/Account";
 import ListCourses from "./Courses/ListCourses/ListCourses";
 import CourseDetail from "./Courses/CourseDetail/CourseDetail";
 
-const MainComponent = ({ accessTokenFromState, accountFromState }) => {
+import * as LocalStorageServices from "../services/LocalStorageServices";
+
+import { accountAction } from "../redux";
+
+const MainComponent = ({
+  dispatch,
+  accessTokenFromState,
+  accountFromState,
+}) => {
   const [accessToken, setAccessToken] = useState();
   const [account, setAccount] = useState();
+  const [isFetchData, setIsFetchData] = useState(false);
+
+  useEffect(() => {
+    const getData = async () => {
+      if (!isFetchData) {
+        const ACCESSTOKEN = await LocalStorageServices.getAccessToken();
+        if (!ACCESSTOKEN) {
+          return setAccessToken(null);
+        }
+        setAccessToken(ACCESSTOKEN);
+
+        const ACCOUNT = await dispatch(accountAction.getAccount());
+        if (!ACCOUNT.status) {
+          return setAccount(null);
+        }
+        setAccount(ACCOUNT.data);
+
+        dispatch(accountAction.loggedIn(ACCESSTOKEN, ACCOUNT.data));
+
+        setIsFetchData(true);
+      }
+    };
+    getData();
+  }, [isFetchData]);
 
   useEffect(() => {
     setAccessToken(accessTokenFromState);
@@ -107,7 +139,7 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
           name="Search"
           component={Search}
           options={{
-            title:"Search",
+            title: "Search",
             ...stackOptions,
             headerRight: () => headerRightButton,
           }}
@@ -171,7 +203,11 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
     const isAuth = props.route.params.isAuth;
 
     const headerRightButton = (
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate("MyCoursesStack");
+        }}
+      >
         {isAuth ? (
           <Ionicons
             style={{ paddingRight: 20 }}
@@ -184,32 +220,40 @@ const MainComponent = ({ accessTokenFromState, accountFromState }) => {
     );
 
     const headerRightHomeButton = (
-      <TouchableOpacity
-        onPress={() => {
-          props.navigation.popToTop(null);
-          props.navigation.navigate("Login");
-        }}
-      >
+      <View>
         {!isAuth ? (
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              color: "black",
-              paddingRight: 20,
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.popToTop(null);
+              props.navigation.navigate("Login");
             }}
           >
-            SIGN IN
-          </Text>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                color: "black",
+                paddingRight: 20,
+              }}
+            >
+              SIGN IN
+            </Text>
+          </TouchableOpacity>
         ) : (
-          <Ionicons
-            style={{ paddingRight: 20 }}
-            name="md-cart"
-            size={30}
-            color="red"
-          />
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate("MyCoursesStack");
+            }}
+          >
+            <Ionicons
+              style={{ paddingRight: 20 }}
+              name="md-cart"
+              size={30}
+              color="red"
+            />
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
+      </View>
     );
 
     return (

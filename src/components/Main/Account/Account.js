@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { Avatar } from "react-native-elements";
 
 import { accountAction } from "../../../redux";
@@ -17,8 +17,11 @@ const Account = ({ navigation, dispatch, accountFromState }) => {
     setAccount(accountFromState);
   }, [accountFromState]);
 
-  const HandleLogout = () => {
-    dispatch(accountAction.logout());
+  const HandleLogout = async () => {
+    const logout = await dispatch(accountAction.logout());
+    if (!logout.status) {
+      return Alert.alert("Lỗi", logout.msg);
+    }
   };
 
   return (

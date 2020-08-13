@@ -8,6 +8,7 @@ import {
   TextInput,
   ImageBackground,
   TouchableOpacity,
+  Alert
 } from "react-native";
 
 import { accountAction } from "../../../redux";
@@ -15,7 +16,6 @@ import { accountAction } from "../../../redux";
 function Login({ navigation, dispatch }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState("");
 
   const HandleCreateAccountButton = () => {
     navigation.navigate("Register");
@@ -27,11 +27,11 @@ function Login({ navigation, dispatch }) {
 
   const HandleLogin = async () => {
     if (email === "" || password === "") {
-      return setStatus("Vui lòng nhập đủ thông tin cần thiết");
+      return Alert.alert("Lỗi", "Vui lòng nhập đủ thông tin cần thiết");
     }
     const login = await dispatch(accountAction.login({ email, password }));
     if (!login.status) {
-      return setStatus(login.msg);
+      return Alert.alert("Lỗi", login.msg);
     }
   };
 
@@ -62,7 +62,6 @@ function Login({ navigation, dispatch }) {
             value={password}
             onChangeText={setPassword}
           />
-          <Text style={{ color: "blue" }}>{status}</Text>
           <TouchableOpacity onPress={HandleForgetPasswordButton}>
             <Text style={styles.textForgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>

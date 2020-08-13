@@ -21,6 +21,7 @@ const CourseDetail = ({
   navigation,
   route,
   dispatch,
+  accountFromState,
   favoritesFromState,
   myCoursesFromState,
 }) => {
@@ -49,6 +50,8 @@ const CourseDetail = ({
     }
     setIsRegisterCourse(registered);
   }, [myCoursesFromState, route.params.id]);
+
+  // console.log(accountFromState)
 
   useEffect(() => {
     if (route.params.id) {
@@ -215,6 +218,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
+    accountFromState: state.account,
     favoritesFromState: state.favorites,
     myCoursesFromState: state.myCourses,
   };

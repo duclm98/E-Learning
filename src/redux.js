@@ -1,35 +1,38 @@
-import {
-    AsyncStorage
-} from "react-native";
+import Storage from 'react-native-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import moment from "moment";
 import instance from "./services/AxiosServices";
 import * as method from "./methods";
 
-let accessToken = null;
-let account = null;
-let historySearch = [];
-async function fetchDataFromStorage() {
-    accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+const storage = new Storage({
+    // maximum capacity, default 1000
+    size: 1000,
 
-    if (accessToken) {
-        const accountToken = await AsyncStorage.getItem("ACCOUNT_TOKEN");
-        if (accountToken) {
-            account = JSON.parse(accountToken);
-        }
+    // Use AsyncStorage for RN apps, or window.localStorage for web apps.
+    // If storageBackend is not set, data will be lost after reload.
+    storageBackend: AsyncStorage, // for web: window.localStorage
 
-        const historySearchToken = await AsyncStorage.getItem("HISTORY_SEARCH");
-        if (historySearchToken) {
-            const historySearchTemp = historySearchToken.split(",");
-            historySearch = historySearchTemp.map((item, index) => {
-                return {
-                    id: index,
-                    name: item,
-                };
-            });
-        }
+    // expire time, default: 30 day (1000 * 3600 * 24 milliseconds).
+    // can be null, which means never expire.
+    defaultExpires: 1000 * 3600 * 24 * 30,
+
+    // cache data in the memory. default is true.
+    enableCache: true,
+
+    // if data was not found in storage or expired data was found,
+    // the corresponding sync method will be invoked returning
+    // the latest data.
+    sync: {
+        // we'll talk about the details later.
     }
-}
-fetchDataFromStorage();
+});
+// I suggest you have one (and only one) storage instance in global scope.
+
+// for web
+// window.storage = storage;
+
+// for react native
+global.storage = storage;
 
 export const accountAction = {
     login: (account) => async (dispatch) => {
@@ -43,10 +46,14 @@ export const accountAction = {
             });
 
             const accessToken = data.token;
-            const accountToken = JSON.stringify(data.userInfo);
 
-            await AsyncStorage.setItem("ACCESS_TOKEN", accessToken);
-            await AsyncStorage.setItem("ACCOUNT_TOKEN", accountToken);
+            await storage.save({
+                key: 'USER',
+                data: {
+                    account: data.userInfo,
+                    accessToken: data.token,
+                },
+            });
 
             dispatch({
                 type: "LOGIN_SUCCESS",
@@ -303,6 +310,11 @@ export const courseAcction = {
     },
     getFavorites: () => async (dispatch) => {
         try {
+            const localData = await storage.load({
+                key: 'USER'
+            });
+            accessToken = localData.accessToken;
+
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
@@ -343,6 +355,11 @@ export const courseAcction = {
     },
     likeCourse: (courseID) => async (dispatch) => {
         try {
+            const localData = await storage.load({
+                key: 'USER'
+            });
+            accessToken = localData.accessToken;
+
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
@@ -392,6 +409,11 @@ export const courseAcction = {
     },
     getMyCourses: () => async (dispatch) => {
         try {
+            const localData = await storage.load({
+                key: 'USER'
+            });
+            accessToken = localData.accessToken;
+
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
@@ -437,11 +459,16 @@ export const courseAcction = {
     },
     freelyRegisterCourse: (courseID) => async (dispatch) => {
         try {
+            const localData = await storage.load({
+                key: 'USER'
+            });
+            accessToken = localData.accessToken;
+
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${accessToken}`;
             const register = await instance.post("payment/get-free-courses", {
-                courseId: courseID
+                courseId: courseID,
             });
 
             const course = await instance.get(
@@ -486,6 +513,43 @@ export const courseAcction = {
     },
 };
 
+let accessToken = null;
+let account = null;
+let historySearch = [];
+
+const fetchDataFromStorage = async () => {
+    // accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+
+    // if (accessToken) {
+    //     const accountToken = await AsyncStorage.getItem("ACCOUNT_TOKEN");
+    //     if (accountToken) {
+    //         account = JSON.parse(accountToken);
+    //     }
+
+    //     const historySearchToken = await AsyncStorage.getItem("HISTORY_SEARCH");
+    //     if (historySearchToken) {
+    //         const historySearchTemp = historySearchToken.split(",");
+    //         historySearch = historySearchTemp.map((item, index) => {
+    //             return {
+    //                 id: index,
+    //                 name: item,
+    //             };
+    //         });
+    //     }
+    // }
+
+    try {
+        const localData = await storage.load({
+            key: 'USER'
+        });
+        accessToken = localData.accessToken;
+        account = localData.account;
+    } catch (error) {
+        console.log(error)
+    }
+};
+fetchDataFromStorage()
+
 const initialState = {
     accessToken,
     account,
@@ -498,6 +562,7 @@ const initialState = {
         data: [],
         isChange: true,
     },
+
 };
 
 export default (state = initialState, action) => {
@@ -563,7 +628,7 @@ export default (state = initialState, action) => {
         return {
             ...state,
             myCourses: {
-                data: [...state.myCourses.data, action.payload.myCourses]
+                data: [...state.myCourses.data, action.payload.myCourses],
             },
         };
     }

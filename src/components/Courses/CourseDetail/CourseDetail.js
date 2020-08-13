@@ -10,6 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  AsyncStorage,
 } from "react-native";
 import ImageButton from "../../Common/ImageButton";
 import instance from "../../../services/AxiosServices";
@@ -21,6 +22,7 @@ const CourseDetail = ({
   navigation,
   route,
   dispatch,
+  accountFromState,
   favoritesFromState,
   myCoursesFromState,
 }) => {
@@ -49,6 +51,8 @@ const CourseDetail = ({
     }
     setIsRegisterCourse(registered);
   }, [myCoursesFromState, route.params.id]);
+
+  // console.log(accountFromState)
 
   useEffect(() => {
     if (route.params.id) {
@@ -215,6 +219,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
+    accountFromState: state.account,
     favoritesFromState: state.favorites,
     myCoursesFromState: state.myCourses,
   };

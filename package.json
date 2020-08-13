@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ant-design/react-native": "^3.3.0",
+    "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "0.1.6",
     "@react-navigation/bottom-tabs": "^5.4.7",
     "@react-navigation/native": "^5.4.2",
@@ -25,6 +26,7 @@
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-searchable-dropdown": "^1.1.1",
+    "react-native-storage": "^1.0.1",
     "react-native-web": "~0.11.7",
     "react-navigation-collapsible": "^5.6.0",
     "react-redux": "^7.2.0",

@@ -173,6 +173,20 @@ const CourseDetail = ({
               </TouchableOpacity>
             </View>
             <Text></Text>
+            
+            {isRegisterCourse ? (
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    HandleLearnNow(course.id);
+                  }}
+                >
+                  <Text style={styles.textInButton}>Vào học ngay</Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
+            <Text></Text>
             <View>
               <Text style={styles.title}>Yêu cầu</Text>
               {renderRequirement(course.requirement)}
@@ -189,23 +203,6 @@ const CourseDetail = ({
               <Text style={styles.title}>Danh sách bài học</Text>
               <LessonList data={course.section}></LessonList>
               <Text></Text>
-
-              {isRegisterCourse ? (
-                <View
-                  style={{ flexDirection: "row", justifyContent: "center" }}
-                >
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                      HandleLearnNow(course.id);
-                    }}
-                  >
-                    <Text style={styles.textInButton}>Vào học ngay</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null}
-              <Text></Text>
-
             </View>
           </View>
         </ScrollView>

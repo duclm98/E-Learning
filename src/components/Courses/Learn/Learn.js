@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
 import { Video } from "expo-av";
+import YoutubePlayer, { getYoutubeMeta } from "react-native-youtube-iframe";
 import {
   Dimensions,
   StyleSheet,
   Text,
   View,
   ScrollView,
+  Image,
   TouchableOpacity,
   Alert,
 } from "react-native";
@@ -26,11 +28,16 @@ const Learn = ({
   favoritesFromState,
   myCoursesFromState,
 }) => {
+  const playerRef = useRef(null);
+  const [playing, setPlaying] = useState(true);
   const [course, setCourse] = useState();
   const [currentLesson, setCurrentLesson] = useState({
-    videoURL: "",
     numberOrder: 0,
     name: "",
+    videoURL: "",
+    currentTime: 0,
+    isFinish: false,
+    youtubeURL: false,
   });
 
   useEffect(() => {
@@ -61,49 +68,78 @@ const Learn = ({
     }
   }, [route.params.id]);
 
+  const getHeightYoutubeVideo = async (videoId) => {
+    const metaData = await getYoutubeMeta(videoId);
+    console.log((windowWidth * metaData.height) / metaData.width);
+    return parseInt((windowWidth * metaData.height) / metaData.width);
+  };
+
+  // Chỉnh độ cao của video youtube
+  const [youtubeVideoHeigh, setYoutubeVideoHeigh] = useState(0);
   useEffect(() => {
-    if (course && course.section) {
-      const videoURL = course.promoVidUrl;
-      course.section.map((i) => {
-        if (i.lesson) {
-          i.lesson.map((j) => {
-            if (j.numberOrder === currentLesson.numberOrder) {
-              return setCurrentLesson({
-                videoURL,
-                name: j.name,
-                numberOrder: j.numberOrder,
-              });
-            }
-          });
-        }
-      });
+    if (currentLesson.youtubeURL !== false) {
+      const getHeightYoutubeVideo = async (videoId) => {
+        const metaData = await getYoutubeMeta(videoId);
+        const height = parseInt(
+          (windowWidth * metaData.height) / metaData.width
+        );
+        setYoutubeVideoHeigh(height);
+      };
+      getHeightYoutubeVideo(currentLesson.youtubeURL);
     }
-  }, [currentLesson.numberOrder]);
-  
-  const videoURL =
-    "https://storage.googleapis.com/itedu-bucket/Courses/b5a93098-3936-4b22-9188-271bd909ebbf/promo/b6a39d59-1068-4028-92e3-cb73fb173712.mov";
+  }, [currentLesson]);
 
   return (
     <View style={{ backgroundColor: "#C6E2FF", display: "flex", flex: 1 }}>
       {course ? (
         <ScrollView>
-          <View style={{ height: 12 }}></View>
+          <View style={{ height: 15 }}></View>
           {currentLesson.videoURL !== "" ? (
-            <Video
-              source={{
-                uri: currentLesson.videoURL,
-              }}
-              rate={1.0}
-              volume={1.0}
-              isMuted={false}
-              resizeMode="cover"
-              shouldPlay
-              isLooping
-              useNativeControls
-              resizeMode={"contain"}
-              style={styles.backgroundVideo}
-            />
-          ) : null}
+            <View>
+              {currentLesson.youtubeURL === false ? (
+                <Video
+                  source={{
+                    uri: currentLesson.videoURL,
+                    overrideFileExtensionAndroid: "mov",
+                  }}
+                  // positionMillis={currentLesson.currentTime}
+                  shouldPlay
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={false}
+                  isLooping={true}
+                  useNativeControls
+                  resizeMode={Video.RESIZE_MODE_CONTAIN}
+                  style={{
+                    width: windowWidth,
+                    height: 250,
+                  }}
+                />
+              ) : (
+                <YoutubePlayer
+                  ref={playerRef}
+                  height={youtubeVideoHeigh}
+                  width={windowWidth}
+                  videoId={currentLesson.youtubeURL}
+                  play={playing}
+                  onChangeState={(event) => console.log(event)}
+                  onReady={() => console.log("ready")}
+                  onError={(e) => console.log(e)}
+                  onPlaybackQualityChange={(q) => console.log(q)}
+                  playbackRate={1}
+                  playerParams={{
+                    cc_lang_pref: "us",
+                    showClosedCaptions: true,
+                  }}
+                />
+              )}
+            </View>
+          ) : (
+            <Image
+              source={{ uri: course.imageUrl }}
+              style={{ height: 200, resizeMode: "cover" }}
+            ></Image>
+          )}
           <View style={{ marginLeft: 5, marginRight: 5 }}>
             <View>
               {currentLesson.numberOrder === 0 ? (
@@ -123,6 +159,7 @@ const Learn = ({
               <LessonList
                 data={course.section}
                 setCurrentLesson={setCurrentLesson}
+                courseID={course.id}
               ></LessonList>
               <Text></Text>
             </View>
@@ -137,10 +174,6 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-  backgroundVideo: {
-    width: windowWidth,
-    height: "100%",
-  },
   title: {
     fontSize: 18,
     fontWeight: "bold",

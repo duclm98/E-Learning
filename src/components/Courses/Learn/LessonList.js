@@ -1,10 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { connect } from "react-redux";
+
+import instance from "../../../services/AxiosServices";
+import * as LocalStorageServices from "../../../services/LocalStorageServices";
 
 import { courseAcction } from "../../../redux";
 
-const LessonList = ({ data, setCurrentLesson }) => {
+const LessonList = ({ data, setCurrentLesson, courseID }) => {
   const hourToTime = (hour) => {
     const totalSecond = parseInt(hour * 3600);
     const hTemp = parseInt(totalSecond / 3600);
@@ -14,6 +17,14 @@ const LessonList = ({ data, setCurrentLesson }) => {
     return `${h}:${m}:00`;
   };
 
+  function matchYoutubeUrl(url) {
+    var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+    if (url.match(p)) {
+      return url.match(p)[1];
+    }
+    return false;
+  }
+
   const renderLessonList = (data) => {
     return data.map((value) => (
       <View style={styles.container}>
@@ -22,11 +33,37 @@ const LessonList = ({ data, setCurrentLesson }) => {
             ...styles.container2,
             paddingRight: 68,
           }}
-          onPress={() => {
-            setCurrentLesson((prev) => ({
-              ...prev,
+          onPress={async () => {
+            const accessToken = await LocalStorageServices.getAccessToken();
+            instance.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${accessToken}`;
+
+            let youtubeURL = false;
+            let videoURL = "";
+            let currentTime = 0;
+            let isFinish = false;
+            try {
+              const { data } = await instance.get(
+                `https://api.itedu.me/lesson/video/${courseID}/${value.id}`
+              );
+              currentTime = parseInt(data.payload.currentTime) * 1000;
+              isFinish = data.payload.isFinish;
+
+              videoURL = data.payload.videoUrl;
+              youtubeURL = matchYoutubeUrl(videoURL);
+            } catch (error) {}
+
+            setCurrentLesson({
               numberOrder: value.numberOrder,
-            }));
+              name: value.name,
+              videoURL,
+              currentTime,
+              isFinish,
+              youtubeURL,
+            });
+
+            // Alert.alert("", "Vui lòng đợi trong khi video được load.");
           }}
         >
           <Text style={{ ...styles.title1, color: "blue" }}>

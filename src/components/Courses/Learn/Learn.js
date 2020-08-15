@@ -68,12 +68,6 @@ const Learn = ({
     }
   }, [route.params.id]);
 
-  const getHeightYoutubeVideo = async (videoId) => {
-    const metaData = await getYoutubeMeta(videoId);
-    console.log((windowWidth * metaData.height) / metaData.width);
-    return parseInt((windowWidth * metaData.height) / metaData.width);
-  };
-
   // Chỉnh độ cao của video youtube
   const [youtubeVideoHeigh, setYoutubeVideoHeigh] = useState(0);
   useEffect(() => {
@@ -93,45 +87,50 @@ const Learn = ({
     <View style={{ backgroundColor: "#C6E2FF", display: "flex", flex: 1 }}>
       {course ? (
         <ScrollView>
-          <View style={{ height: 15 }}></View>
           {currentLesson.videoURL !== "" ? (
             <View>
               {currentLesson.youtubeURL === false ? (
-                <Video
-                  source={{
-                    uri: currentLesson.videoURL,
-                    overrideFileExtensionAndroid: "mov",
-                  }}
-                  // positionMillis={currentLesson.currentTime}
-                  shouldPlay
-                  rate={1.0}
-                  volume={1.0}
-                  isMuted={false}
-                  isLooping={true}
-                  useNativeControls
-                  resizeMode={Video.RESIZE_MODE_CONTAIN}
-                  style={{
-                    width: windowWidth,
-                    height: 250,
-                  }}
-                />
+                <View>
+                  <View style={{ height: 15 }}></View>
+                  <Video
+                    source={{
+                      uri: currentLesson.videoURL,
+                      overrideFileExtensionAndroid: "mov",
+                    }}
+                    // positionMillis={currentLesson.currentTime}
+                    shouldPlay
+                    rate={1.0}
+                    volume={1.0}
+                    isMuted={false}
+                    isLooping={true}
+                    useNativeControls
+                    resizeMode={Video.RESIZE_MODE_CONTAIN}
+                    style={{
+                      width: windowWidth,
+                      height: 250,
+                    }}
+                  />
+                </View>
               ) : (
-                <YoutubePlayer
-                  ref={playerRef}
-                  height={youtubeVideoHeigh}
-                  width={windowWidth}
-                  videoId={currentLesson.youtubeURL}
-                  play={playing}
-                  onChangeState={(event) => console.log(event)}
-                  onReady={() => console.log("ready")}
-                  onError={(e) => console.log(e)}
-                  onPlaybackQualityChange={(q) => console.log(q)}
-                  playbackRate={1}
-                  playerParams={{
-                    cc_lang_pref: "us",
-                    showClosedCaptions: true,
-                  }}
-                />
+                <View>
+                  <View style={{ height: 38 }}></View>
+                  <YoutubePlayer
+                    ref={playerRef}
+                    height={youtubeVideoHeigh}
+                    width={windowWidth}
+                    videoId={currentLesson.youtubeURL}
+                    play={playing}
+                    onChangeState={(event) => console.log(event)}
+                    onReady={() => console.log("ready")}
+                    onError={(e) => console.log(e)}
+                    onPlaybackQualityChange={(q) => console.log(q)}
+                    playbackRate={1}
+                    playerParams={{
+                      cc_lang_pref: "us",
+                      showClosedCaptions: true,
+                    }}
+                  />
+                </View>
               )}
             </View>
           ) : (

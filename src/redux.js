@@ -459,13 +459,14 @@ export const courseAcction = {
         }
     },
     freelyRegisterCourse: (courseID) => async (dispatch) => {
-        try {
-            const accessToken = await LocalStorageServices.getAccessToken();
-            instance.defaults.headers.common[
-                "Authorization"
-            ] = `Bearer ${accessToken}`;
+        const accessToken = await LocalStorageServices.getAccessToken();
+        instance.defaults.headers.common[
+            "Authorization"
+        ] = `Bearer ${accessToken}`;
 
-            const register = await instance.post("payment/get-free-courses", {
+        try {
+
+            await instance.post("payment/get-free-courses", {
                 courseId: courseID,
             });
 

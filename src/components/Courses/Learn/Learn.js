@@ -3,6 +3,9 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { Video } from "expo-av";
 import YoutubePlayer, { getYoutubeMeta } from "react-native-youtube-iframe";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
+import * as Permissions from "expo-permissions";
 import {
   Dimensions,
   StyleSheet,
@@ -11,6 +14,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Button,
   Alert,
 } from "react-native";
 import instance from "../../../services/AxiosServices";
@@ -18,22 +22,17 @@ import LessonList from "./LessonList";
 
 import * as LocalStorageServices from "../../../services/LocalStorageServices";
 
-import { courseAcction } from "../../../redux";
+import { otherActions } from "../../../redux";
 
-const Learn = ({
-  navigation,
-  route,
-  dispatch,
-  accountFromState,
-  favoritesFromState,
-  myCoursesFromState,
-}) => {
+const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
   const [course, setCourse] = useState();
   const [currentLesson, setCurrentLesson] = useState({
+    lessonID: "",
     numberOrder: 0,
     name: "",
+    totalTime: "",
     videoURL: "",
     currentTime: 0,
     isFinish: false,
@@ -82,6 +81,136 @@ const Learn = ({
       getHeightYoutubeVideo(currentLesson.youtubeURL);
     }
   }, [currentLesson]);
+
+  // Tải bài học
+  const formatBytes = (bytes, decimals = 2) => {
+    if (!bytes) {
+      return "0 Bytes";
+    }
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  };
+
+  const [buttonTitle, setButtonTitle] = useState("Tải bài học");
+  const [progress, setProgress] = useState(0);
+  const [totalSize, setTotalSize] = useState(0);
+
+  const saveFile = async (fileUri) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync("Download", asset, false);
+    }
+  };
+
+  const downloadVideo = async (
+    lessonID,
+    videoURL,
+    numberOrder,
+    name,
+    totalTime
+  ) => {
+    if (lessonID === "" || videoURL === "") {
+      return Alert.alert("Cảnh báo", "Không thể tải bài học");
+    }
+
+    setButtonTitle("Đang tải");
+
+    const callback = (downloadProgress) => {
+      setTotalSize(formatBytes(downloadProgress.totalBytesExpectedToWrite));
+
+      let progress =
+        downloadProgress.totalBytesWritten /
+        downloadProgress.totalBytesExpectedToWrite;
+      progress = progress.toFixed(2) * 100;
+
+      setProgress(progress.toFixed(0));
+    };
+
+    const downloadResumable = FileSystem.createDownloadResumable(
+      videoURL,
+      FileSystem.documentDirectory + `${lessonID}.mp4`,
+      {},
+      callback
+    );
+
+    try {
+      await downloadResumable
+        .downloadAsync()
+        .then(async ({ uri }) => {
+          await saveFile(uri);
+          const data = {
+            lessonID,
+            videoURL: uri,
+            numberOrder,
+            name,
+            totalTime,
+          };
+          dispatch(otherActions.saveDownloadedVideo(data));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      setButtonTitle("Đã tải");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  console.log(downloadedFromState)
+
+  const renderDownloaded = () => {
+    return downloadedFromState.map((value) => {
+      let isExisted = false;
+      course.section.map((i) => {
+        i.lesson.map((j) => {
+          if (i.id === value.courseID) {
+            isExisted = true;
+          }
+        });
+      });
+      if (isExisted) {
+        return (
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={{
+                ...styles.container2,
+                paddingRight: 68,
+              }}
+              onPress={async () => {
+                setCurrentLesson({
+                  numberOrder: value.numberOrder,
+                  name: value.name,
+                  totalTime: value.totalTime,
+                  videoURL: value.videoURL,
+                  currentTime: 0,
+                  isFinish: false,
+                  youtubeURL: false,
+                  lessonID: value.lessonID,
+                });
+              }}
+            >
+              <Text style={{ ...styles.title1, color: "blue" }}>
+                Bài {value.numberOrder}:{" "}
+              </Text>
+              <Text style={{ ...styles.title1, color: "blue" }}>
+                {value.name}
+              </Text>
+            </TouchableOpacity>
+            <Text style={{ ...styles.title1, width: 58 }}>
+              {value.totalTime}
+            </Text>
+          </View>
+        );
+      }
+    });
+  };
 
   return (
     <View style={{ backgroundColor: "#C6E2FF", display: "flex", flex: 1 }}>
@@ -151,6 +280,35 @@ const Learn = ({
                 </Text>
               )}
             </View>
+
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  downloadVideo(
+                    currentLesson.lessonID,
+                    currentLesson.videoURL,
+                    currentLesson.numberOrder,
+                    currentLesson.name,
+                    currentLesson.totalTime
+                  );
+                }}
+              >
+                <Text style={styles.textInButton}>{buttonTitle}</Text>
+              </TouchableOpacity>
+              <Text style={{ fontSize: 15, margin: 5, paddingLeft: 10 }}>
+                {totalSize}
+              </Text>
+              <Text style={{ fontSize: 15, margin: 5, paddingLeft: 10 }}>
+                {progress} %
+              </Text>
+            </View>
             <Text></Text>
 
             <View>
@@ -162,6 +320,14 @@ const Learn = ({
               ></LessonList>
               <Text></Text>
             </View>
+            <Text></Text>
+
+            <View>
+              <Text style={styles.title}>Danh sách bài học đã tải</Text>
+              {renderDownloaded()}
+              <Text></Text>
+            </View>
+            <Text></Text>
           </View>
         </ScrollView>
       ) : null}
@@ -173,6 +339,16 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  container2: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 1,
+  },
   title: {
     fontSize: 18,
     fontWeight: "bold",
@@ -187,9 +363,9 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#EB4848",
-    width: windowWidth / 2 - 10,
-    height: 40,
+    backgroundColor: "green",
+    width: windowWidth / 2 - 50,
+    height: 30,
   },
   textInButton: {
     textAlign: "center",
@@ -198,13 +374,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  title1: {
+    fontSize: 15,
+    paddingTop: 1,
+  },
 });
 
 const mapStateToProps = (state) => {
   return {
-    accountFromState: state.account,
-    favoritesFromState: state.favorites,
-    myCoursesFromState: state.myCourses,
+    downloadedFromState: state.downloaded,
   };
 };
 

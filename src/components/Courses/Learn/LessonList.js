@@ -17,6 +17,7 @@ const LessonList = ({ data, setCurrentLesson, courseID }) => {
     return `${h}:${m}:00`;
   };
 
+  // Hàm kiểm tra xem có phải link youtube không, nếu có trả về id của video
   function matchYoutubeUrl(url) {
     var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
     if (url.match(p)) {
@@ -57,10 +58,12 @@ const LessonList = ({ data, setCurrentLesson, courseID }) => {
             setCurrentLesson({
               numberOrder: value.numberOrder,
               name: value.name,
+              totalTime: hourToTime(value.hours),
               videoURL,
               currentTime,
               isFinish,
               youtubeURL,
+              lessonID: value.id,
             });
 
             // Alert.alert("", "Vui lòng đợi trong khi video được load.");

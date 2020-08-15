@@ -520,6 +520,15 @@ export const otherActions = {
             }
         })
     },
+    saveDownloadedVideo: (data) => async dispatch => {
+        const downloaded = await LocalStorageServices.setDownloadedVideo(data);
+        dispatch({
+            type: 'GET_DOWNLOADED_VIDEO',
+            payload: {
+                downloaded
+            }
+        })
+    }
 }
 
 let accessToken = null;
@@ -538,6 +547,7 @@ const initialState = {
         data: [],
         isChange: true,
     },
+    downloaded:[]
 };
 
 export default (state = initialState, action) => {
@@ -597,6 +607,11 @@ export default (state = initialState, action) => {
         return {
             ...state,
             historySearch: action.payload.historySearch
+        }
+    } else if (action.type === 'GET_DOWNLOADED_VIDEO') {
+        return {
+            ...state,
+            downloaded: action.payload.downloaded
         }
     }
     return state;

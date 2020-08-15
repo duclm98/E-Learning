@@ -311,7 +311,7 @@ const CourseDetail = ({
               >
                 <AirbnbRating
                   count={1}
-                  reviews={[`${course.averagePoint}`]}
+                  reviews={[`${parseInt(course.averagePoint % 5)}`]}
                   defaultRating={1}
                   size={80}
                 />

@@ -4,19 +4,27 @@ import { connect } from "react-redux";
 import { StyleSheet, Text, View, FlatList, Button } from "react-native";
 import ListCoursesItem from "../../Courses/ListCoursesItem/ListCoursesItem";
 
-import { courseAcction } from "../../../redux";
+import { courseAcction, otherActions } from "../../../redux";
 
 const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
   const [courses, setCourses] = useState([]);
   const [selectedItems, setSelectedItems] = useState();
   const [keyword, setKeyword] = useState("");
   const [items, setItems] = useState(historySearchFromState);
+  const [isGetHistorySearch, setIsGetHistorySearch] = useState(false);
   const [category, setCategery] = useState({
     type: 1,
     data: [],
   });
   const [page, setPage] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (!isGetHistorySearch) {
+      dispatch(otherActions.getHistorySearch());
+      setIsGetHistorySearch(true);
+    }
+  }, [isGetHistorySearch]);
 
   useEffect(() => {
     setItems(historySearchFromState);
@@ -40,12 +48,14 @@ const Search = ({ navigation, route, dispatch, historySearchFromState }) => {
 
   // Phân loại tìm kiếm
   useEffect(() => {
-    if (category.type === 1) { // Không phân loại
+    if (category.type === 1) {
+      // Không phân loại
       setCategery((prev) => ({
         ...prev,
         data: courses,
       }));
-    } else if (category.type === 2) { // Phân loại theo tác gỉa
+    } else if (category.type === 2) {
+      // Phân loại theo tác gỉa
       const data = [...courses];
       let index = 0;
       while (index < data.length - 1) {

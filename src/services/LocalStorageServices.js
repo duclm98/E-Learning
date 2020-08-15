@@ -78,3 +78,84 @@ export const getAccessToken = async () => {
         return null;
     }
 }
+
+export const getHistorySearch = async (userID) => {
+    try {
+        const historySearch = await storage.load({
+            key: 'HISTORY-SEARCH'
+        });
+        let result = [];
+        historySearch.map(i => {
+            if (i.userID === userID) {
+                result = i.data;
+            }
+        })
+        return result;
+    } catch (error) {
+        return [];
+    }
+}
+
+export const setHistorySearch = async (userID, keyword) => {
+    try {
+        let historySearch = [];
+        try {
+            historySearch = await storage.load({
+                key: 'HISTORY-SEARCH'
+            });
+        } catch (error) {}
+
+        if (historySearch.length === 0) {
+            historySearch = [{
+                userID: userID,
+                data: [{
+                    id: 1,
+                    name: keyword
+                }]
+            }]
+        } else {
+            const userIDs = historySearch.map(i => i.userID);
+            if (userIDs.includes(userID)) {
+                historySearch.map(i => {
+                    let isExisted = false;
+                    if (i.userID === userID) {
+                        i.data.map(j => {
+                            if (j.name === keyword) {
+                                isExisted = true;
+                            }
+                        })
+                    }
+                    if (!isExisted) {
+                        const nextID = i.data.length + 1;
+                        i.data.push({
+                            id: nextID,
+                            name: keyword
+                        })
+                    }
+                })
+            } else {
+                historySearch.push({
+                    userID: userID,
+                    data: [{
+                        id: 1,
+                        name: keyword
+                    }]
+                })
+            }
+        }
+        await storage.save({
+            key: 'HISTORY-SEARCH',
+            data: historySearch
+        });
+
+        let result = [];
+        historySearch.map(i => {
+            if (i.userID === userID) {
+                result = i.data;
+            }
+        })
+        return result;
+    } catch (error) {
+        return [];
+    }
+}

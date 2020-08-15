@@ -5,14 +5,14 @@ import instance from "./services/AxiosServices";
 import * as LocalStorageServices from "./services/LocalStorageServices";
 
 export const accountAction = {
-    loggedIn: (accessToken, account) => async dispatch => {
+    loggedIn: (accessToken, account) => async (dispatch) => {
         dispatch({
             type: "LOGGED_IN",
             payload: {
                 accessToken,
-                account
-            }
-        })
+                account,
+            },
+        });
     },
     login: (account) => async (dispatch) => {
         const email = account.email.toLowerCase();
@@ -63,7 +63,7 @@ export const accountAction = {
         if (!deleteAccountAndAccessToken) {
             return {
                 status: false,
-                msg: 'Có lỗi xảy ra, vui lòng thử lại.'
+                msg: "Có lỗi xảy ra, vui lòng thử lại.",
             };
         }
 
@@ -72,14 +72,12 @@ export const accountAction = {
         });
 
         return {
-            status: true
-        }
+            status: true,
+        };
     },
-    getAccount: () => async dispatch => {
+    getAccount: () => async (dispatch) => {
         const accessToken = await LocalStorageServices.getAccessToken();
-        instance.defaults.headers.common[
-            "Authorization"
-        ] = `Bearer ${accessToken}`;
+        instance.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
         try {
             const {
@@ -88,12 +86,12 @@ export const accountAction = {
 
             return {
                 status: true,
-                data: data.payload
-            }
+                data: data.payload,
+            };
         } catch (error) {
             return {
-                status: false
-            }
+                status: false,
+            };
         }
     },
     createAccount: (email, password, phone) => async (_) => {
@@ -287,23 +285,19 @@ export const courseAcction = {
             });
 
             if (keyword !== "") {
-                let historySearchTempToken = await AsyncStorage.getItem(
-                    "HISTORY_SEARCH"
-                );
-                if (historySearchTempToken) {
-                    const historySearchTemp = historySearchTempToken.split(",");
-                    await AsyncStorage.setItem(
-                        "HISTORY_SEARCH",
-                        [...historySearchTemp, keyword].toString()
-                    );
+                let historySearch = [];
+                const accessToken = await LocalStorageServices.getAccessToken();
+                const account = await LocalStorageServices.getAccount();
+                if (accessToken && account) {
+                    historySearch = await LocalStorageServices.setHistorySearch(account.id, keyword);
                 } else {
-                    await AsyncStorage.setItem("HISTORY_SEARCH", [keyword].toString());
+                    historySearch = await LocalStorageServices.setHistorySearch('anonymous', keyword);
                 }
 
                 dispatch({
                     type: "SAVE_HISTORY_SEARCH",
                     payload: {
-                        keyword,
+                        historySearch,
                     },
                 });
             }
@@ -460,12 +454,9 @@ export const courseAcction = {
     },
     freelyRegisterCourse: (courseID) => async (dispatch) => {
         const accessToken = await LocalStorageServices.getAccessToken();
-        instance.defaults.headers.common[
-            "Authorization"
-        ] = `Bearer ${accessToken}`;
+        instance.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
         try {
-
             await instance.post("payment/get-free-courses", {
                 courseId: courseID,
             });
@@ -512,6 +503,25 @@ export const courseAcction = {
     },
 };
 
+export const otherActions = {
+    getHistorySearch: () => async dispatch => {
+        let historySearch = [];
+        const accessToken = await LocalStorageServices.getAccessToken();
+        const account = await LocalStorageServices.getAccount();
+        if (accessToken && account) {
+            historySearch = await LocalStorageServices.getHistorySearch(account.id);
+        } else {
+            historySearch = await LocalStorageServices.getHistorySearch('anonymous');
+        }
+        dispatch({
+            type: 'GET_HISTORY_SEARCH',
+            payload: {
+                historySearch
+            }
+        })
+    },
+}
+
 let accessToken = null;
 let account = null;
 let historySearch = [];
@@ -536,7 +546,7 @@ export default (state = initialState, action) => {
             ...state,
             accessToken: action.payload.accessToken,
             account: action.payload.account,
-        }
+        };
     } else if (action.type === "LOGIN_SUCCESS") {
         return {
             ...state,
@@ -545,29 +555,12 @@ export default (state = initialState, action) => {
         };
     } else if (action.type === "LOGOUT_SUCCESS") {
         return {
-            ...initialState
-        };
-    } else if (action.type === "SEARCH_SUCCESS") {
-        return {
-            ...state,
-            searchCourses: action.payload.courses,
-        };
-    } else if (action.type === "SEARCH_FAILED") {
-        return {
-            ...state,
-            searchCourses: [],
+            ...initialState,
         };
     } else if (action.type === "SAVE_HISTORY_SEARCH") {
-        const nextID = state.historySearch.length;
         return {
             ...state,
-            historySearch: [
-                ...state.historySearch,
-                {
-                    id: nextID,
-                    name: action.payload.keyword,
-                },
-            ],
+            historySearch: action.payload.historySearch
         };
     } else if (action.type === "GET_FAVORITES_SUCCESS") {
         return {
@@ -600,6 +593,11 @@ export default (state = initialState, action) => {
                 data: [...state.myCourses.data, action.payload.myCourses],
             },
         };
+    } else if (action.type === 'GET_HISTORY_SEARCH') {
+        return {
+            ...state,
+            historySearch: action.payload.historySearch
+        }
     }
     return state;
 };

@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "#C6E2FF"
   },
   common: {
     display: "flex",

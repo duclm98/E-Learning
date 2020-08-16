@@ -20,5 +20,6 @@ Hướng dẫn để cài đặt và chạy ứng dụng...
 * Deadline 4: Xây dựng ứng dụng hoàn chỉnh
   * Commit ID: f7cde99fbeb0d41e81753db5ba9ee277e074820d
   * Video demo: https://youtu.be/6YhnZLMmmk0
+  * Link đến file đã build (.apk): https://drive.google.com/file/d/1Ay212SFDIAs2aCMWJcgvZrCrLADu_W-6/view?usp=sharing
 
 ------------------------------------------------------------

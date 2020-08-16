@@ -168,17 +168,13 @@ export const setHistorySearch = async (userID, keyword) => {
 
 export const setDownloadedVideo = async (data) => {
   let downloaded = [];
-  //   try {
-  //     downloaded = await storage.load({
-  //       key: "VIDEO",
-  //     });
-  //   } catch (error) {
-  //       console.log(error)
-  //   }
-  downloaded = await storage.load({
-    key: "VIDEO",
-  });
-  console.log(downloaded)
+  try {
+    downloaded = await storage.load({
+      key: "VIDEO",
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
   let isExisted = false;
   for (let i = 0; i < downloaded.length; i++) {
@@ -187,7 +183,6 @@ export const setDownloadedVideo = async (data) => {
       break;
     }
   }
-  console.log(downloaded)
 
   if (!isExisted) {
     downloaded.push(data);
@@ -195,7 +190,7 @@ export const setDownloadedVideo = async (data) => {
 
   try {
     await storage.save({
-      key: "VIDEO-ID",
+      key: "VIDEO",
       data: downloaded,
     });
   } catch (error) {}

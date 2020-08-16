@@ -24,7 +24,7 @@ import * as LocalStorageServices from "../../../services/LocalStorageServices";
 
 import { otherActions } from "../../../redux";
 
-const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
+const Learn = ({ navigation, route, dispatch }) => {
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(true);
   const [course, setCourse] = useState();
@@ -83,6 +83,16 @@ const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
   }, [currentLesson]);
 
   // Tải bài học
+  const [buttonTitle, setButtonTitle] = useState("Tải bài học");
+  const [progress, setProgress] = useState(0);
+  const [totalSize, setTotalSize] = useState(0);
+
+  const [downloaded, setDownloaded] = useState([]);
+  const [
+    isGetDownloadedFromLocalStorage,
+    setIsGetDownloadedFromLocalStorage,
+  ] = useState(false);
+
   const formatBytes = (bytes, decimals = 2) => {
     if (!bytes) {
       return "0 Bytes";
@@ -96,10 +106,6 @@ const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   };
-
-  const [buttonTitle, setButtonTitle] = useState("Tải bài học");
-  const [progress, setProgress] = useState(0);
-  const [totalSize, setTotalSize] = useState(0);
 
   const saveFile = async (fileUri) => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -118,6 +124,16 @@ const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
   ) => {
     if (lessonID === "" || videoURL === "") {
       return Alert.alert("Cảnh báo", "Không thể tải bài học");
+    }
+
+    let isDownload = false;
+    downloaded.map((i) => {
+      if (i.lessonID === lessonID) {
+        isDownload = true;
+      }
+    });
+    if (isDownload) {
+      return Alert.alert("Cảnh báo", "Bạn đã tải bài học này");
     }
 
     setButtonTitle("Đang tải");
@@ -152,25 +168,57 @@ const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
             name,
             totalTime,
           };
-          dispatch(otherActions.saveDownloadedVideo(data));
+          await dispatch(otherActions.saveDownloadedVideo(data));
+          setIsGetDownloadedFromLocalStorage(false);
         })
         .catch((error) => {
           console.error(error);
         });
       setButtonTitle("Đã tải");
+      setProgress(0);
+      setTotalSize(0);
     } catch (e) {
       console.error(e);
     }
   };
 
-  console.log(downloadedFromState)
+  // Lấy thông tin các video đã tải từ local storage
+  useEffect(() => {
+    if (!isGetDownloadedFromLocalStorage) {
+      const getDownloaded = async () => {
+        const data = await LocalStorageServices.getAllDownloadedVideo();
+        setDownloaded(data);
+        setIsGetDownloadedFromLocalStorage(true);
+      };
+      getDownloaded();
+    }
+  }, [isGetDownloadedFromLocalStorage]);
 
-  const renderDownloaded = () => {
-    return downloadedFromState.map((value) => {
+  useEffect(() => {
+    let isDownload = false;
+    downloaded.map((i) => {
+      if (i.lessonID === currentLesson.lessonID) {
+        isDownload = true;
+        return setButtonTitle("Đã tải");
+      }
+    });
+    if (!isDownload) {
+      setButtonTitle("Tải bài học");
+    }
+  }, [downloaded, currentLesson]);
+
+  // Hiển thị các bài học đã tải
+  const renderDownloaded = (downloaded) => {
+    // Sắp xếp bài học tăng dần
+    downloaded.sort(function (a, b) {
+      return a.numberOrder - b.numberOrder;
+    });
+
+    return downloaded.map((value) => {
       let isExisted = false;
       course.section.map((i) => {
         i.lesson.map((j) => {
-          if (i.id === value.courseID) {
+          if (j.id === value.lessonID) {
             isExisted = true;
           }
         });
@@ -324,7 +372,7 @@ const Learn = ({ navigation, route, dispatch, downloadedFromState }) => {
 
             <View>
               <Text style={styles.title}>Danh sách bài học đã tải</Text>
-              {renderDownloaded()}
+              {renderDownloaded(downloaded)}
               <Text></Text>
             </View>
             <Text></Text>
@@ -381,9 +429,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  return {
-    downloadedFromState: state.downloaded,
-  };
+  return {};
 };
 
 export default connect(mapStateToProps)(Learn);

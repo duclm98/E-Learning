@@ -18,7 +18,7 @@ Hướng dẫn để cài đặt và chạy ứng dụng...
   * Video demo: https://youtu.be/6YhnZLMmmk0
 
 * Deadline 4: Xây dựng ứng dụng hoàn chỉnh
-  * Commit ID:
+  * Commit ID: f7cde99fbeb0d41e81753db5ba9ee277e074820d
   * Video demo: https://youtu.be/6YhnZLMmmk0
 
 ------------------------------------------------------------

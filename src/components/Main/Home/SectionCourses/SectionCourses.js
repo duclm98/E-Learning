@@ -50,6 +50,14 @@ function SectionCourses({
           setCourses(data.data);
         }
       }
+      if (!["1", "2", "3", "4"].includes(type)) {
+        const data = await dispatch(
+          courseAcction.getCoursesByCategoryID(type, 5, 1)
+        ); // Type chính là category ID
+        if (data.status) {
+          setCourses(data.data);
+        }
+      }
     };
     getCourses();
   }, [type]);

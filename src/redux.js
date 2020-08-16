@@ -166,6 +166,33 @@ export const categoryAcction = {
 };
 
 export const courseAcction = {
+    getCoursesByCategoryID: (categoryID, limit, offset) => async _ => {
+        try {
+            const courses = await instance.post('course/search', {
+                keyword: "",
+                opt: {
+                    category: [categoryID]
+                },
+                limit,
+                offset
+            })
+            const data = courses.data.payload.rows.map(i => {
+                return {
+                    ...i,
+                    author: i.name,
+                    released: moment(i.updatedAt).format("DD/MM/YYYY"),
+                }
+            })
+            return {
+                status: true,
+                data
+            }
+        } catch (error) {
+            return {
+                status: false
+            }
+        }
+    },
     getRecommendCourses: (limit, offset) => async (_) => {
         try {
             const account = await LocalStorageServices.getAccount();

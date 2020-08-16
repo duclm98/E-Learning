@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-} from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import ListCoursesItem from "../ListCoursesItem/ListCoursesItem";
 
 import { courseAcction } from "../../../redux";
@@ -31,12 +27,20 @@ const ListCourses = ({ navigation, route, dispatch }) => {
           setData(data.data);
         }
       }
+      if (!["1", "2", "3", "4"].includes(type)) {
+        const data = await dispatch(
+          courseAcction.getCoursesByCategoryID(type, 100, 1)
+        ); // Type chính là category ID
+        if (data.status) {
+          setData(data.data);
+        }
+      }
     };
     getCourses();
-  },[type]);
+  }, [type]);
 
   return (
-    <View style={{backgroundColor:'#C6E2FF'}}>
+    <View style={{ display: "flex", flex: 1, backgroundColor: "#C6E2FF" }}>
       <FlatList
         data={data}
         renderItem={({ item }) => (

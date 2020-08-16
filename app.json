@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "E-Learning",
-    "slug": "E-Learning",
+    "slug": "E-Learning", 
     "platforms": [
       "ios",
       "android",
@@ -9,9 +9,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/book.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/teacher.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,6 +24,10 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": ""
+    "description": "",
+    "android": {
+      "package": "minhduc.le.eLearning",
+      "versionCode": 1
+    }
   }
 }

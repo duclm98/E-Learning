@@ -3,20 +3,20 @@ import { connect } from "react-redux";
 import { View, FlatList } from "react-native";
 import ListCoursesItem from "../../Courses/ListCoursesItem/ListCoursesItem";
 
-import { courseAcction } from '../../../redux';
+import { courseAcction } from "../../../redux";
 
-const MyCourses = ({ navigation, dispatch, myCoursesFromState }) => {
+const Favorite = ({ navigation, dispatch, favoritesFromState }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (myCoursesFromState.isChange) {
-      dispatch(courseAcction.getMyCourses());
+    if (favoritesFromState.isChange) {
+      dispatch(courseAcction.getFavorites());
     }
-  }, [myCoursesFromState.isChange]);
+  }, [favoritesFromState]);
 
   useEffect(() => {
-    setData(myCoursesFromState.data);
-  }, [myCoursesFromState]);
+    setData(favoritesFromState.data);
+  }, [favoritesFromState]);
 
   return (
     <View
@@ -41,8 +41,8 @@ const MyCourses = ({ navigation, dispatch, myCoursesFromState }) => {
 
 const mapStateToProps = (state) => {
   return {
-    myCoursesFromState: state.myCourses,
+    favoritesFromState: state.favorites,
   };
 };
 
-export default connect(mapStateToProps)(MyCourses);
+export default connect(mapStateToProps)(Favorite);

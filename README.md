@@ -23,3 +23,6 @@ Hướng dẫn để cài đặt và chạy ứng dụng...
   * Link đến file đã build (.apk): https://drive.google.com/file/d/1Ay212SFDIAs2aCMWJcgvZrCrLADu_W-6/view?usp=sharing
 
 ------------------------------------------------------------
+Tài khoản demo app
+* Username: duc1612112@gmail.com
+* Password: 12345678
